@@ -17,8 +17,7 @@
     <a href="https://github.com/hantbk/vbackup">
         <img src="https://img.shields.io/github/go-mod/go-version/hantbk/vbackup.svg" alt="Go version" />
     </a>
-    <!-- Uncomment the following lines if needed -->
-    <!-- <a href="https://github.com/hantbk/vbackup/releases/">
+    <a href="https://github.com/hantbk/vbackup/releases/">
         <img src="https://img.shields.io/github/release/hantbk/vbackup.svg" alt="GitHub release" />
     </a>
     <a href="https://github.com/hantbk/vbackup/actions/workflows/ci.yml">
@@ -26,7 +25,7 @@
     </a>
     <a href="https://github.com/hantbk/vbackup/actions/workflows/release.yml">
         <img src="https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg" alt="Release Status" />
-    </a> -->
+    </a>
 </div>
 
 ## Overview
