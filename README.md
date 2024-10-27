@@ -4,7 +4,7 @@
 
 <p align="center"><b>A Simple, Open-Source, and Modern Web UI for Restic</b></p>
 
-<div style="text-align: center;">
+<div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
     <a href="https://goreportcard.com/report/github.com/hantbk/vbackup">
         <img src="https://goreportcard.com/badge/github.com/hantbk/vbackup" alt="Go Report Card" />
     </a>
