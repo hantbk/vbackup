@@ -1,18 +1,37 @@
 # vBackup
 
-<p align="center"><a href="https://github.com/hantbk/vbackup" target="_blank"><img src="./web/dashboard/src/assets/logo/vbackup-bar.png" alt="vBackup" width="500" /></a></p>
+<p align="center"><a href="https://github.com/hantbk/vbackup" target="_blank"><img src="./web/dashboard/src/assets/logo/vbackup.png" alt="vBackup" width="500" /></a></p>
 
 <p align="center"><b>A Simple, Open-Source, and Modern Web UI for Restic</b></p>
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/hantbk/vbackup)](https://goreportcard.com/report/github.com/hantbk/vbackup)
-[![GoDoc](https://godoc.org/github.com/hantbk/vbackup?status.svg)](https://godoc.org/github.com/hantbk/vbackup)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Go version](https://img.shields.io/github/go-mod/go-version/hantbk/vbackup.svg)](https://github.com/hantbk/vbackup)
-<!-- [![GitHub release](https://img.shields.io/github/release/hantbk/vbackup.svg)](https://github.com/hantbk/vbackup/releases/)
-[![CI Status](https://github.com/hantbk/vbackup/actions/workflows/ci.yml/badge.svg)](https://github.com/hantbk/vbackup/actions/workflows/ci.yml)
-[![Release Status](https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg)](https://github.com/hantbk/vbackup/actions/workflows/release.yml) -->
+<div style="text-align: center;">
+    <a href="https://goreportcard.com/report/github.com/hantbk/vbackup">
+        <img src="https://goreportcard.com/badge/github.com/hantbk/vbackup" alt="Go Report Card" />
+    </a>
+    <a href="https://godoc.org/github.com/hantbk/vbackup">
+        <img src="https://godoc.org/github.com/hantbk/vbackup?status.svg" alt="GoDoc" />
+    </a>
+    <a href="https://opensource.org/licenses/Apache-2.0">
+        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0" />
+    </a>
+    <a href="https://github.com/hantbk/vbackup">
+        <img src="https://img.shields.io/github/go-mod/go-version/hantbk/vbackup.svg" alt="Go version" />
+    </a>
+    <!-- Uncomment the following lines if needed -->
+    <!-- <a href="https://github.com/hantbk/vbackup/releases/">
+        <img src="https://img.shields.io/github/release/hantbk/vbackup.svg" alt="GitHub release" />
+    </a>
+    <a href="https://github.com/hantbk/vbackup/actions/workflows/ci.yml">
+        <img src="https://github.com/hantbk/vbackup/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+    </a>
+    <a href="https://github.com/hantbk/vbackup/actions/workflows/release.yml">
+        <img src="https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg" alt="Release Status" />
+    </a> -->
+</div>
 
-vBackup is a file backup system built on Restic. It not only has the powerful capabilities of Restic, but also adds rich functions and ease of use to provide users with a more comprehensive data protection experience.
+## Overview
+
+[vBackup](https://github.com/hantbk/vbackup) is a file backup system built on [Restic](https://github.com/restic/restic). It not only has the powerful capabilities of Restic, but also adds rich functions and ease of use to provide users with a more comprehensive data protection experience.
 
 ## Features
 
@@ -29,3 +48,10 @@ vBackup is a file backup system built on Restic. It not only has the powerful ca
 - [Cobra](https://github.com/spf13/cobra)
 - [Iris](https://github.com/kataras/iris)
 - [Vue](https://github.com/vuejs/vue)
+
+## Installation
+
+## Quick Start
+
+## Documentation
+
