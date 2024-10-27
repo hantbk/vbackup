@@ -52,4 +52,4 @@ build_osx_arm64:
 
 # Build Docker image
 build_image:
-	docker buildx build -t vbackup/vbackup:${VERSION} -t vbackup/vbackup:latest --platform=linux/arm64,linux/amd64 . --push
+	docker buildx build -t hantbk/vbackup:${VERSION} -t hantbk/vbackup:latest --platform=linux/arm64,linux/amd64 . --push

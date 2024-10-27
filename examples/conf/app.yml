@@ -19,7 +19,7 @@ logger:
   #logPath: /root/.vbackup/log
 jwt:
   # JWT secret key, please modify it
-  key: project3
+  key: vbackup-secret
   # Token expiration time, in seconds
   maxAge: 1800
 prometheus:

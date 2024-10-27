@@ -1,5 +1,6 @@
 module.exports = {
-  title: 'vBackup',
+  title: '酷备份',
+  title_en: 'KuBackup',
 
   /**
    * @type {boolean} true | false
