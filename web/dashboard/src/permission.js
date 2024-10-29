@@ -48,7 +48,7 @@ router.beforeEach(async(to, from, next) => {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           Notification({
-            title: '错误',
+            title: 'Error',
             message: error || 'Has Error',
             type: 'error',
             duration: 5 * 1000

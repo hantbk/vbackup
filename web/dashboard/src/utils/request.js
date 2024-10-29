@@ -136,7 +136,7 @@ service.interceptors.response.use(
   },
   error => {
     Notification({
-      title: '错误',
+      title: 'Error',
       message: error.message,
       type: 'error'
     })

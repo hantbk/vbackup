@@ -3,22 +3,22 @@
     <div class="handle-search">
       <el-form :model="listQuery" inline @submit.native.prevent>
         <el-form-item :label="'plan' | i18n">
-          <el-select v-model="listQuery.planId" class="handle-select mr5" clearable placeholder="请选择">
+          <el-select v-model="listQuery.planId" class="handle-select mr5" clearable placeholder="Please select">
             <el-option
-              v-for="(item, index) in [{id: 0, name: '所有'}].concat(planList)"
+              v-for="(item, index) in [{id: 0, name: 'All'}].concat(planList)"
               :key="index"
               :label="item.name"
               :value="item.id"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="Name">
           <el-input v-model="listQuery.name" placeholder="name" style="width: 150px;" class="filter-item" clearable/>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="listQuery.status" class="handle-select mr5" clearable placeholder="请选择">
+        <el-form-item label="Status">
+          <el-select v-model="listQuery.status" class="handle-select mr5" clearable placeholder="Please select">
             <el-option
-              v-for="(item, index) in [{status: -1, name: '所有'}].concat(statusList)"
+              v-for="(item, index) in [{status: -1, name: 'All'}].concat(statusList)"
               :key="index"
               :label="item.name"
               :value="item.status"
@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilter">Search</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -37,7 +37,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="name" align="center" label="名称"/>
+      <el-table-column prop="name" align="center" label="Name"/>
 
       <el-table-column prop="createdAt" :formatter="dateFormat" align="center" :label="'createdAt' | i18n"/>
 
@@ -48,7 +48,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="dataAdd" align="center" label="数据">
+      <el-table-column prop="dataAdd" align="center" label="Data">
         <template slot-scope="{row}">
           {{ row.summary.dataAdded || row.progress.bytesDone }}
         </template>
@@ -87,7 +87,7 @@
     />
 
     <el-dialog v-if="taskType(taskInfo.name) === 1"
-               :title="'任务信息 '+(taskInfo.summary.snapshotId===undefined?'...':taskInfo.summary.snapshotId)"
+               :title="'Task information '+(taskInfo.summary.snapshotId===undefined?'...':taskInfo.summary.snapshotId)"
                :visible.sync="dialogFormVisible" top="5vh"
                @close="closeSockjs"
                width="80%">
@@ -98,50 +98,50 @@
               <span class="info_title bluetext">扫描信息</span>
             </div>
             <el-row :gutter="10">
-              <el-col :span="24"><p>数据量：{{ taskInfo.scanner.dataSize }}</p></el-col>
-              <el-col :span="24"><p>文件数量：{{ taskInfo.scanner.totalFiles }}</p></el-col>
-              <el-col :span="24"><p class="redtext">耗时：{{ taskInfo.scanner.duration }}</p></el-col>
+              <el-col :span="24"><p>Data volume: {{ taskInfo.scanner.dataSize }}</p></el-col>
+              <el-col :span="24"><p>Number of files: {{ taskInfo.scanner.totalFiles }}</p></el-col>
+              <el-col :span="24"><p class="redtext">Duration: {{ taskInfo.scanner.duration }}</p></el-col>
             </el-row>
           </el-card>
         </el-col>
         <el-col v-if="taskInfo.status===3 && taskInfo.scannerError" :span="8">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title redtext">扫描错误</span>
+              <span class="info_title redtext">Scan error</span>
             </div>
             <el-row :gutter="10">
-              <el-col :span="24"><p>错误信息：{{ taskInfo.scannerError.error }}</p></el-col>
-              <el-col :span="24"><p>错误项：{{ taskInfo.scannerError.item }}</p></el-col>
+              <el-col :span="24"><p>Error message: {{ taskInfo.scannerError.error }}</p></el-col>
+              <el-col :span="24"><p>Error item: {{ taskInfo.scannerError.item }}</p></el-col>
             </el-row>
           </el-card>
         </el-col>
         <el-col v-if="taskInfo.summary && taskInfo.status!==3" :span="16">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title bluetext">恢复信息</span>
+              <span class="info_title bluetext">Recovery information</span>
             </div>
             <el-row :gutter="10">
               <el-col :span="8"><p>
-                数据量：{{ taskInfo.progress.bytesDone ? taskInfo.progress.bytesDone : taskInfo.scanner.dataSize }}</p>
+                Data volume: {{ taskInfo.progress.bytesDone ? taskInfo.progress.bytesDone : taskInfo.scanner.dataSize }}</p>
               </el-col>
-              <el-col :span="8"><p>文件数量：{{ taskInfo.progress.filesDone }}</p></el-col>
+              <el-col :span="8"><p>Number of files: {{ taskInfo.progress.filesDone }}</p></el-col>
               <el-col v-if="taskInfo.progress.errorCount>0" :span="8" class="redtext"><p>
-                错误数量：{{ taskInfo.progress.errorCount }}</p></el-col>
+                Number of errors: {{ taskInfo.progress.errorCount }}</p></el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :span="8"><p class="redtext">耗时：{{ taskInfo.progress.secondsElapsed }}</p></el-col>
+              <el-col :span="8"><p class="redtext">Duration: {{ taskInfo.progress.secondsElapsed }}</p></el-col>
               <el-col v-if="taskInfo.progress.secondsRemaining" :span="8"><p class="redtext">
-                剩余时间：{{ taskInfo.progress.secondsRemaining }}</p></el-col>
+                Remaining time: {{ taskInfo.progress.secondsRemaining }}</p></el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :span="8"><p>平均速度：{{ taskInfo.progress.avgSpeed }}</p></el-col>
+              <el-col :span="8"><p>Average speed: {{ taskInfo.progress.avgSpeed }}</p></el-col>
             </el-row>
           </el-card>
         </el-col>
         <el-col v-if="taskInfo.status===3 && (taskInfo.archivalError||taskInfo.restoreError)" :span="16">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title redtext">恢复错误</span>
+              <span class="info_title redtext">Recovery error</span>
             </div>
             <el-row :gutter="10">
               <template v-if="taskInfo.restoreError">
@@ -160,71 +160,71 @@
     </el-dialog>
 
     <el-dialog v-if="taskType(taskInfo.name) === 2"
-               :title="'任务信息 '+(taskInfo.summary.snapshotId===undefined?'...':taskInfo.summary.snapshotId)"
+               :title="'Task information '+(taskInfo.summary.snapshotId===undefined?'...':taskInfo.summary.snapshotId)"
                :visible.sync="dialogFormVisible" top="5vh"
                width="80%" @close="closeSockjs">
       <el-row :gutter="10">
         <el-col v-if="taskInfo.scanner && taskInfo.status!==3" :span="8">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title bluetext">扫描信息</span>
+              <span class="info_title bluetext">Scan information</span>
             </div>
             <el-row :gutter="10">
-              <el-col :span="24"><p>数据量：{{ taskInfo.scanner.dataSize }}</p></el-col>
-              <el-col :span="24"><p>文件数量：{{ taskInfo.scanner.totalFiles }}</p></el-col>
-              <el-col :span="24"><p class="redtext">扫描耗时：{{ taskInfo.scanner.duration }}</p></el-col>
+              <el-col :span="24"><p>Data volume: {{ taskInfo.scanner.dataSize }}</p></el-col>
+              <el-col :span="24"><p>Number of files: {{ taskInfo.scanner.totalFiles }}</p></el-col>
+              <el-col :span="24"><p class="redtext">Scan duration: {{ taskInfo.scanner.duration }}</p></el-col>
             </el-row>
           </el-card>
         </el-col>
         <el-col v-if="taskInfo.status===3 && taskInfo.scannerError" :span="12">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title redtext">扫描错误</span>
+              <span class="info_title redtext">Scan error</span>
             </div>
             <el-row :gutter="10">
-              <el-col :span="24"><p>错误信息：{{ taskInfo.scannerError.error }}</p></el-col>
-              <el-col :span="24"><p>错误项：{{ taskInfo.scannerError.item }}</p></el-col>
+              <el-col :span="24"><p>Error message: {{ taskInfo.scannerError.error }}</p></el-col>
+              <el-col :span="24"><p>Error item: {{ taskInfo.scannerError.item }}</p></el-col>
             </el-row>
           </el-card>
         </el-col>
         <el-col v-if="taskInfo.status!==3" :span="16">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title bluetext">汇总信息</span>
+              <span class="info_title bluetext">Summary information</span>
             </div>
             <el-row :gutter="10">
               <el-col :span="8"><p>
-                处理数据量：{{ taskInfo.progress.bytesDone ? taskInfo.progress.bytesDone : taskInfo.scanner.dataSize }}</p>
+                Processed data volume: {{ taskInfo.progress.bytesDone ? taskInfo.progress.bytesDone : taskInfo.scanner.dataSize }}</p>
               </el-col>
-              <el-col :span="8"><p>新增文件夹：{{ taskInfo.summary.dirsNew }}</p></el-col>
-              <el-col :span="8"><p>新增文件：{{ taskInfo.summary.filesNew }}</p></el-col>
+              <el-col :span="8"><p>New folders: {{ taskInfo.summary.dirsNew }}</p></el-col>
+              <el-col :span="8"><p>New files: {{ taskInfo.summary.filesNew }}</p></el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :span="8"><p class="redtext">新增数据量：{{ taskInfo.summary.dataAdded }}</p></el-col>
-              <el-col :span="8"><p>变动文件夹：{{ taskInfo.summary.dirsChanged }}</p></el-col>
-              <el-col :span="8"><p>变动文件：{{ taskInfo.summary.filesChanged }}</p></el-col>
+              <el-col :span="8"><p class="redtext">New data volume: {{ taskInfo.summary.dataAdded }}</p></el-col>
+              <el-col :span="8"><p>Changed folders: {{ taskInfo.summary.dirsChanged }}</p></el-col>
+              <el-col :span="8"><p>Change files: {{ taskInfo.summary.filesChanged }}</p></el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :span="8"><p class="redtext">完成文件数量：{{ taskInfo.progress.filesDone }}</p></el-col>
-              <el-col :span="8"><p>未修改文件夹：{{ taskInfo.summary.dirsUnmodified }}</p></el-col>
-              <el-col :span="8"><p>未修改文件：{{ taskInfo.summary.filesUnmodified }}</p></el-col>
+              <el-col :span="8"><p class="redtext">Complete files count: {{ taskInfo.progress.filesDone }}</p></el-col>
+              <el-col :span="8"><p>Unmodified folders: {{ taskInfo.summary.dirsUnmodified }}</p></el-col>
+              <el-col :span="8"><p>Unmodified files: {{ taskInfo.summary.filesUnmodified }}</p></el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :span="8"><p class="redtext">耗时：{{ taskInfo.progress.secondsElapsed }}</p></el-col>
+              <el-col :span="8"><p class="redtext">Duration: {{ taskInfo.progress.secondsElapsed }}</p></el-col>
               <el-col v-if="taskInfo.progress.secondsRemaining && sockjsOpen" :span="8"><p class="redtext">
-                剩余时间：{{ taskInfo.progress.secondsRemaining }}</p></el-col>
+                Remaining time: {{ taskInfo.progress.secondsRemaining }}</p></el-col>
               <el-col v-if="taskInfo.progress.errorCount>0" :span="8" class="redtext"><p>
-                错误数量：{{ taskInfo.progress.errorCount }}</p></el-col>
+                Number of errors: {{ taskInfo.progress.errorCount }}</p></el-col>
             </el-row>
             <el-row :gutter="10">
-              <el-col :span="8"><p>平均速度：{{ taskInfo.progress.avgSpeed }}</p></el-col>
+              <el-col :span="8"><p>Average speed: {{ taskInfo.progress.avgSpeed }}</p></el-col>
             </el-row>
           </el-card>
         </el-col>
         <el-col v-if="taskInfo.archivalError" :span="12">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title redtext">备份错误</span>
+              <span class="info_title redtext">Backup error</span>
             </div>
             <template v-if="taskInfo.archivalError">
               <el-col v-for="(item,index) in taskInfo.archivalError" :key="index" :span="24">
@@ -238,7 +238,7 @@
         <el-col :span="24">
           <el-card>
             <div slot="header" class="clearfix">
-              <span class="info_title">进度</span>
+              <span class="info_title">Progress</span>
             </div>
             <div>
               <el-progress
@@ -278,10 +278,10 @@ export default {
     return {
       dialogFormVisible: false,
       statusList: [
-        {name: '新建', status: 0, color: 'primary'},
-        {name: '运行中', status: 1, color: 'primary'},
-        {name: '已完成', status: 2, color: 'success'},
-        {name: '错误', status: 3, color: 'danger'}
+      {name: 'New', status: 0, color: 'primary'},
+      {name: 'Running', status: 1, color: 'primary'},
+      {name: 'Completed', status: 2, color: 'success'},
+      {name: 'Error', status: 3, color: 'danger'}
       ],
       taskInfo: {
         summary: {},
@@ -412,7 +412,7 @@ export default {
             that.sockjsOpen = false
             that.$notify({
               type: 'error',
-              title: '错误',
+              title: 'Error',
               message: data.message
             })
           } else {

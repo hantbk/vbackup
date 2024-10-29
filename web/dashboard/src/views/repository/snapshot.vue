@@ -2,10 +2,10 @@
   <div class="app-container">
     <div class="handle-search">
       <el-form :model="listQuery" inline @submit.native.prevent>
-        <el-form-item label="筛选">
-          <el-select v-model="listQuery.path" clearable placeholder="筛选路径" @change="handleSearch">
+        <el-form-item label="Filter">
+          <el-select v-model="listQuery.path" clearable placeholder="Select Path" @change="handleSearch">
             <el-option
-              v-for="(item,id) in pathList"
+              v-for="(item, id) in pathList"
               :key="id"
               :label="item"
               :value="item"
@@ -17,7 +17,7 @@
           <el-date-picker
             v-model="listQuery.date"
             type="date"
-            placeholder="选择日期"
+            placeholder="Select Date"
             @change="handleSearch">
           </el-date-picker>
         </el-form-item>
@@ -28,33 +28,33 @@
         <el-col :xs="8" :sm="8" :lg="8" class="card-panel-col">
           <el-card class="box-card">
             <div slot="header">
-              <p>主机：{{ hostname }}</p>
-              <p>路径：{{ listQuery.path }}</p>
-              <p>合计：{{ total }}</p>
+              <p>Host: {{ hostname }}</p>
+              <p>Path: {{ listQuery.path }}</p>
+              <p>Total: {{ total }}</p>
               <div>
-                <p>清理策略：</p>
+                <p>Cleanup Policy:</p>
                 <div v-if="policy.n > 0">
-                  <p>保留最新 <i class="blue">{{ policy.n + formatType(policy.type).name }} </i> 快照 </p>
+                  <p>Retain latest <i class="blue">{{ policy.n + formatType(policy.type).name }} </i> snapshots</p>
                   <el-button
                     class="forget-create"
                     type="text"
                     size="mini"
                     @click="handleUpdate()">
-                    修改
+                    Update
                   </el-button>
                   <el-button
                     class="forget-create"
                     type="text"
                     size="mini"
                     @click="handleDel()">
-                    删除
+                    Delete
                   </el-button>
                   <el-button
                     class="forget-create"
                     type="text"
                     size="mini"
                     @click="doPolicy()">
-                    立即执行
+                    Execute Now
                   </el-button>
                 </div>
                 <div v-else-if="policy.n === 0 && listQuery.path !== ''">
@@ -63,7 +63,7 @@
                     type="text"
                     size="mini"
                     @click="handleAdd()">
-                    设置
+                    Set
                   </el-button>
                 </div>
               </div>
@@ -74,7 +74,7 @@
                   <el-timeline-item
                     v-for="(item, index) in snaps.list"
                     :key="index"
-                    :timestamp="item.time|goDatToDateString"
+                    :timestamp="item.time | goDatToDateString"
                     type="primary"
                     icon="el-icon-success"
                     size="large"
@@ -87,22 +87,22 @@
                         type="text"
                         size="mini"
                         @click="deleteSnap(item.short_id)">
-                        删除
+                        Delete
                       </el-button>
                     </div>
                   </el-timeline-item>
                 </el-timeline>
               </el-collapse-item>
             </el-collapse>
-            <p v-if="noMore" style="font-size: 20px; text-align: center; color: #bbbbbb">没有更多了</p>
+            <p v-if="noMore" style="font-size: 20px; text-align: center; color: #bbbbbb">No more items</p>
             <div v-else style="text-align: center;">
-              <el-button :loading="listLoading" type="info" plain @click="getMoreList">加载更多</el-button>
+              <el-button :loading="listLoading" type="info" plain @click="getMoreList">Load More</el-button>
             </div>
           </el-card>
         </el-col>
         <el-col :xs="16" :sm="16" :lg="16" class="card-panel-col">
           <el-card class="box-card">
-            <Terminal title="日志" showHeader :init="forgetObj.init"
+            <Terminal title="Logs" showHeader :init="forgetObj.init"
                       :data="forgetObj.logs"/>
           </el-card>
         </el-col>
@@ -110,26 +110,26 @@
     </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" top="5vh" width="500px">
       <div>
-        <el-input placeholder="请输入内容" type="Number" v-model="temp.n" class="input-with-select" maxlength="2">
-          <template slot="prepend">保留最新：</template>
+        <el-input placeholder="Enter value" type="Number" v-model="temp.n" class="input-with-select" maxlength="2">
+          <template slot="prepend">Retain latest:</template>
           <template slot="append">
-            <el-select v-model="temp.type" placeholder="请选择" disabled>
+            <el-select v-model="temp.type" placeholder="Select" disabled>
               <el-option v-for="item in typeList" :key="item.code" :label="item.name" :value="item.code"/>
             </el-select>
           </template>
         </el-input>
-        <p class="red">系统将保留最新 {{ temp.n + formatType(temp.type).name }} 快照，超出部分将删除并清理磁盘空间</p>
+        <p class="red">The system will retain the latest {{ temp.n + formatType(temp.type).name }} snapshots, and any excess will be deleted to free up disk space.</p>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          取消
+          Cancel
         </el-button>
         <el-button
           type="primary"
           :loading="buttonLoading"
           @click=" dialogStatus === 'create' ? createPolicyData() : updatePolicyData()"
         >
-          确定
+          Confirm
         </el-button>
       </div>
     </el-dialog>
@@ -165,8 +165,8 @@ export default {
         logs: []
       },
       textMap: {
-        update: '修改清理策略',
-        create: '创建清理策略'
+        update: 'Modify cleanup policy',
+        create: 'Create cleanup policy'
       },
       dialogStatus: '',
       dialogFormVisible: false,
@@ -230,7 +230,7 @@ export default {
       return this.typeList.find(item => item.code === code)
     },
     deleteSnap(snapid) {
-      this.$confirm('确定将"' + snapid + '"删除吗？', '删除快照', {
+      this.$confirm('Confirm "' + snapid + '"to be delete ?', 'Delete snapshot', {
         type: 'warning'
       }).then(() => {
         this.forgetObj.logs = []
@@ -242,7 +242,7 @@ export default {
       })
     },
     doPolicy() {
-      this.$confirm('确定执行清理策略吗？', '执行清理策略', {
+      this.$confirm('Are you sure you want to execute the cleanup policy? ', 'Execute cleanup policy', {
         type: 'warning'
       }).then(() => {
         this.forgetObj.logs = []
@@ -260,7 +260,7 @@ export default {
           info.logs = []
         }
         if (info.status !== 1) {
-          // 仅保留info数据中的最新100条
+          // Only keep the latest 100 entries in the info data
           if (info.logs.length > 100) {
             info.logs = info.logs.slice(info.logs.length - 100)
           }
@@ -348,7 +348,7 @@ export default {
             that.sockjsOpen = false
             that.$notify({
               type: 'error',
-              title: '错误',
+              title: 'Error',
               message: data.message
             })
           } else {
@@ -414,10 +414,6 @@ export default {
 .active {
   background: $light-blue;
   color: $menuHover;
-}
-
-.filenode {
-
 }
 
 .filenodes {

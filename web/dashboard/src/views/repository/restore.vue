@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="handle-search">
       <el-form :model="listQuery" inline @submit.native.prevent>
-        <el-form-item label="筛选">
+        <el-form-item label="Filter">
           <el-cascader
             v-model="pathQuery"
             :options="hostList"
             :props="{ expandTrigger: 'hover' }"
             clearable
-            placeholder="输入内容搜索"
+            placeholder="Input content to search"
             filterable
             separator=" => "
             style="width: 800px"
@@ -18,7 +18,7 @@
           <el-date-picker
             v-model="listQuery.date"
             type="date"
-            placeholder="选择日期"
+            placeholder="Select date"
             @change="handleSearch">
           </el-date-picker>
         </el-form-item>
@@ -52,23 +52,23 @@
                         type="text"
                         size="mini"
                         @click="openRestoreOpt(item.short_id)">
-                        恢复
+                        Restore
                       </el-button>
                     </div>
                   </el-timeline-item>
                 </el-timeline>
               </el-collapse-item>
             </el-collapse>
-            <p v-if="noMore" style="font-size: 20px; text-align: center; color: #bbbbbb">没有更多了</p>
+            <p v-if="noMore" style="font-size: 20px; text-align: center; color: #bbbbbb">No more</p>
             <div v-else style="text-align: center;">
-              <el-button :loading="listLoading" type="info" plain @click="getMoreList">加载更多</el-button>
+              <el-button :loading="listLoading" type="info" plain @click="getMoreList">Load more</el-button>
             </div>
           </el-card>
         </el-col>
         <el-col :xs="16" :sm="16" :lg="16" class="card-panel-col">
           <el-card class="box-card">
             <div>
-              <el-input placeholder="输入准确路径，搜索速度会更快，如：data/test/avator.png" v-model="fileSearch.name"
+              <el-input placeholder="Enter the exact path for faster search, e.g: data/test/avatar.png" v-model="fileSearch.name"
                         clearable
                         @clear="searchFile"
                         class="input-with-select">
@@ -105,7 +105,7 @@
                     type="text"
                     size="mini"
                     @click="() => restoreFileHandler(data)">
-                    还原
+                    Restore
                   </el-button>
                 </span>
               </span>
@@ -115,42 +115,42 @@
       </el-row>
     </div>
     <el-dialog
-      title="还原选项"
+      title="Restore Options"
       :visible.sync="dialogFormVisible"
     >
       <el-form ref="dataForm" label-position="left" label-width="150px">
-        <el-form-item label="还原到：" prop="path">
+        <el-form-item label="Restore to: " prop="path">
           <el-input v-model="restoreOpt.dirCur" disabled>
-            <el-button slot="append" @click="openDirSelect()">选择</el-button>
+            <el-button slot="append" @click="openDirSelect()">Select</el-button>
           </el-input>
-          <span style="color: red">默认恢复到"/"，恢复数据即文件原来的路径，若修改，则数据还原路径为当前选择路径加备份路径，例：/root{{
+          <span style="color: red">Default restore to '/', restoring data to the original path of the file. If modified, the data restore path will be the current selected path plus the backup path, for example: /root{{
               listQuery.path
-            }}，/root为本次选择路径</span>
+            }}, /root is the current selected path</span>
         </el-form-item>
-        <el-form-item label="数据最终所在目录：" prop="path">
+        <el-form-item label="Final directory for the data: " prop="path">
           <span>{{ restoreOpt.dist }}</span>
         </el-form-item>
-        <el-form-item label="是否校验数据完整性">
+        <el-form-item label="Do you want to verify data integrity?">
           <el-switch
             v-model="restoreOpt.verify">
           </el-switch>
-          <p style="color: red">开启数据完整性校验，校验时间较长，请根据需要选择！</p>
+          <p style="color: red">Enable data integrity verification, which may take a long time. Please choose according to your needs! </p>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          取消
+          Cancel
         </el-button>
         <el-button
           type="primary"
           @click="restoreSnapHandler()"
         >
-          确定
+          Confirm
         </el-button>
       </div>
     </el-dialog>
     <el-dialog
-      title="选择文件夹"
+      title="Select Folder"
       :visible.sync="dialogDirVisible"
     >
       <div>
@@ -160,7 +160,7 @@
           </el-breadcrumb-item>
         </el-breadcrumb>
         <div class="filenodes">
-          <span class="custom-tree-node filenode" v-for="(item, index) in dirList" :key="index" v-if="item.isDir"
+          <span class="custom-tree-node filenode" v-for="(item, index) in filteredDirList" :key="index"
                 :class="{active : restoreOpt.dirCur === item.path}"
                 @dblclick.prevent="lsDir(item.path,item.isDir)"
                 @click="selectDir(item.path,item.isDir)">
@@ -174,7 +174,7 @@
               class="confirmbtn"
               size="mini"
               @click="confirmDirSelect(item.path)">
-                    确定
+                    Confirm
                   </el-button>
           </span>
         </span>
@@ -182,12 +182,12 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogDirVisible = false">
-          取消
+          Cancel
         </el-button>
         <el-button
           type="primary"
           @click="confirmDirSelect()">
-          确定
+          Confirm
         </el-button>
       </div>
     </el-dialog>
@@ -225,8 +225,8 @@ export default {
       curSnap: {},
       activeName: '0',
       searchType: [
-        {code: 0, name: '全库'},
-        {code: 1, name: '当前快照'}
+        {code: 0, name: 'Full Library'},
+        {code: 1, name: 'Current Snapshot'}
       ],
       fileSearch: {
         type: 0,
@@ -261,6 +261,11 @@ export default {
   },
   activated() {
     this.getParmList()
+  },
+  computed: {
+    filteredDirList() {
+      return this.dirList.filter(item => item.isDir);
+    }
   },
   methods: {
     openRestoreOpt(snapid) {
@@ -305,7 +310,7 @@ export default {
         })
       })
       res.unshift({
-        name: '根',
+        name: 'Root',
         path: '/'
       })
       return res
@@ -401,12 +406,12 @@ export default {
           this.treeLoading = false
         })
       } else {
-        this.$notify.error("功能暂未开放")
+        this.$notify.error("This feature is not yet available.")
       }
     },
     restoreSnapHandler() {
       const snapid = this.restoreOpt.snapid
-      this.$confirm('确认执行恢复<' + snapid + '>操作吗？该操作可能非常耗时！', '恢复数据', {
+      this.$confirm('Are you sure you want to execute the restore operation for <' + snapid + '>? This operation may take a long time! ', 'Restore Data', {
         type: 'warning'
       }).then(() => {
         const data = {
@@ -418,8 +423,8 @@ export default {
           this.dialogDirVisible = false
           this.dialogFormVisible = false
           this.$notify.success({
-            title: '恢复中...',
-            message: '请前往"<a style="color: #409EFF" href="/Task/index">任务记录</a>"查看',
+            title: 'Restoring...',
+            message: 'Please go to "<a style="color: #409EFF" href="/Task/index">Task Records</a>" to check.',
             dangerouslyUseHTMLString: true
           })
         }).finally(() => {
@@ -427,7 +432,7 @@ export default {
           this.dialogFormVisible = false
         })
       }).catch(() => {
-        this.$notify.info({title: '取消'})
+        this.$notify.info({title: 'Cancel'})
       })
     },
     loadSnapFiles(snap) {
@@ -441,7 +446,7 @@ export default {
         pageSize: this.filedata.pageSize,
         name: '',
         path: this.filedata.path,
-        label: '加载更多',
+        label: 'Load more',
         isMore: 1,
         type: 'btn',
         mode: 755,
@@ -461,25 +466,25 @@ export default {
         }
       })
     },
-    // 节点点击事件
+    // Node click event.
     moreClick(data, treenode) {
       if (data.type === 'btn') {
         this.getFiles(data, treenode)
       }
     },
-    // 展开节点事件
+    // Expand node event.
     getFiles(data, treenode) {
-      // data.isMore = 0 普通文件，1 加载更多按钮，2 没有更多按钮，3 root 节点
-      // data.type = dir 文件夹，file 文件，btn 加载按钮
-      // 仅允许root节点点击、文件夹第一次点击、加载更多按钮点击
+      // data.isMore = 0 Ordinary file, 1 Load more button, 2 No more button, 3 Root node
+      // data.type = dir Folder, file File, btn Load button
+      // Only allow clicks on the root node, the first click on a folder, and the load more button click
       if ((data.isMore === 0 && data.type === 'file') || data.isMore === 2) {
         return
       }
       if (data.type === 'dir') {
-        //root节点点击、文件夹第一次点击，加载第一页数据，设置没有更多状态
+        // When the root node is clicked or a folder is clicked for the first time, load the first page of data and set the no more status.
         data.pageNum = 1
       } else {
-        //加载更多
+        // Load more button clicked, increase the page number.
         data.pageNum++
       }
       const q = {
@@ -501,7 +506,7 @@ export default {
               pageSize: size,
               path: node.path,
               name: '',
-              label: '加载更多',
+              label: 'Load more',
               isMore: 1,
               type: 'btn',
               mode: node.mode,
@@ -530,7 +535,7 @@ export default {
             children: dirChild
           }
           if (data.isMore === 1) {
-            //追加到同级
+            // Append to the same level.
             const parent = treenode.parent
             if (!parent.data.children) {
               this.filedata.children.push(newChild)
@@ -539,7 +544,7 @@ export default {
             }
 
           } else {
-            //追加到下一级
+            // Append to the next level.
             data.children.push(newChild)
           }
         })
@@ -577,7 +582,7 @@ export default {
           more = l
           if (Number(num) * Number(size) >= total) {
             more.isMore = 2
-            more.label = '没有更多了'
+            more.label = 'No more'
           }
           return
         }
@@ -662,10 +667,6 @@ export default {
 .active {
   background: $light-blue;
   color: $menuHover;
-}
-
-.filenode {
-
 }
 
 .filenodes {

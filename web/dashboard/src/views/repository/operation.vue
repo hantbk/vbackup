@@ -4,85 +4,79 @@
       <el-row :gutter="40" class="panel-group">
         <el-col :xs="6" :sm="6" :lg="6" class="card-panel-col">
           <el-form label-position="right" label-width="80px">
-            <el-form-item label="名称:">
+            <el-form-item label="Name:">
               <span>{{ repoData.name }}</span>
             </el-form-item>
-            <el-form-item label="服务器:">
+            <el-form-item label="Server:">
               <span>{{ repoData.endPoint }}</span>
             </el-form-item>
-            <el-form-item label="桶:" v-if="repoData.bucket">
+            <el-form-item label="Bucket:" v-if="repoData.bucket">
               <span>{{ repoData.bucket }}</span>
             </el-form-item>
-            <el-form-item label="创建时间:">
+            <el-form-item label="Created At:">
               <span>{{ dateFormat(repoData.createdAt) }}</span>
             </el-form-item>
-            <el-form-item label="类型:">
+            <el-form-item label="Type:">
               <span>{{ formatType(repoData.type) }}</span>
             </el-form-item>
-            <el-form-item label="格式版本:">
+            <el-form-item label="Format Version:">
               <span>{{ repoData.repositoryVersion }}</span>
-              <el-button type="text" @click="migrationHandler()">升级版本</el-button>
+              <el-button type="text" @click="migrationHandler()">Upgrade Version</el-button>
             </el-form-item>
-            <el-form-item label="连接状态:">
+            <el-form-item label="Connection Status:">
               <el-tag :type="formatStatus(repoData.status).color">
                 {{ formatStatus(repoData.status).name }}
               </el-tag>
             </el-form-item>
-            <el-form-item label="错误信息:" v-if="repoData.errmsg!==''">
+            <el-form-item label="Error Message:" v-if="repoData.errmsg!==''">
               <span>{{ repoData.errmsg }}</span>
             </el-form-item>
-            <el-form-item label="数据状态:">
+            <el-form-item label="Data Status:">
               <div class="form-btn">
                 <el-tag :type="formatStatus(checkObj.status).color">
                   {{ formatStatus(checkObj.status).name }}
                 </el-tag>
-                <el-button type="text" @click="checkHandler()">重新检测</el-button>
+                <el-button type="text" @click="checkHandler()">Re-check</el-button>
               </div>
             </el-form-item>
-            <el-form-item label="重建索引:">
+            <el-form-item label="Rebuild Index:">
               <div class="form-btn">
                 <el-tag :type="formatStatus(rebuildIndexObj.status).color">
                   {{ formatStatus(rebuildIndexObj.status).name }}
                 </el-tag>
-                <el-button type="text" @click="rebuildIndexHandler()">重新执行</el-button>
+                <el-button type="text" @click="rebuildIndexHandler()">Re-execute</el-button>
               </div>
             </el-form-item>
-            <el-form-item label="清理无用数据:">
+            <el-form-item label="Clean Unused Data:">
               <div class="form-btn">
                 <el-tag :type="formatStatus(pruneObj.status).color">
                   {{ formatStatus(pruneObj.status).name }}
                 </el-tag>
-                <el-button type="text" @click="pruneHandler()">重新执行</el-button>
+                <el-button type="text" @click="pruneHandler()">Re-execute</el-button>
               </div>
             </el-form-item>
-            <el-form-item label="清除锁:">
+            <el-form-item label="Clear Lock:">
               <div class="form-btn">
-                <el-button type="text" @click="unlockHandler()">执行</el-button>
+                <el-button type="text" @click="unlockHandler()">Execute</el-button>
               </div>
             </el-form-item>
           </el-form>
         </el-col>
         <el-col :xs="18" :sm="18" :lg="18" class="card-panel-col">
           <el-tabs v-model="activeName" tab-position="left" @tab-click="handleTabClick">
-            <el-tab-pane label="数据状态" name="1">
-              <Terminal title="日志" showHeader :init="checkObj.init"
-                        :data="checkObj.logs"/>
+            <el-tab-pane label="Data Status" name="1">
+              <Terminal title="Logs" showHeader :init="checkObj.init" :data="checkObj.logs"/>
             </el-tab-pane>
-            <el-tab-pane label="重建索引" name="2">
-              <Terminal title="日志" showHeader :init="rebuildIndexObj.init"
-                        :data="rebuildIndexObj.logs"/>
+            <el-tab-pane label="Rebuild Index" name="2">
+              <Terminal title="Logs" showHeader :init="rebuildIndexObj.init" :data="rebuildIndexObj.logs"/>
             </el-tab-pane>
-            <el-tab-pane label="清理数据" name="3">
-              <Terminal title="日志" showHeader :init="pruneObj.init"
-                        :data="pruneObj.logs"/>
+            <el-tab-pane label="Clean Data" name="3">
+              <Terminal title="Logs" showHeader :init="pruneObj.init" :data="pruneObj.logs"/>
             </el-tab-pane>
-            <el-tab-pane label="版本升级" name="5">
-              <Terminal title="日志" showHeader :init="migrateObj.init"
-                        :data="migrateObj.logs"/>
+            <el-tab-pane label="Version Upgrade" name="5">
+              <Terminal title="Logs" showHeader :init="migrateObj.init" :data="migrateObj.logs"/>
             </el-tab-pane>
-
           </el-tabs>
-
         </el-col>
       </el-row>
     </div>
@@ -200,7 +194,7 @@ export default {
     },
     unlockHandler() {
       fetchUnlock(this.listQuery.id).then(res => {
-        this.$notify.success('成功清理' + res.data + '个锁')
+        this.$notify.success('Successfully cleared' + res.data + 'locks.')
       })
     },
     getLastOper(type) {
@@ -210,7 +204,7 @@ export default {
           info.logs = []
         }
         if (info.status !== 1) {
-          // 仅保留info数据中的最新100条
+          // Keep only the latest 100 entries in the info data.
           if (info.logs.length > 100) {
             info.logs = info.logs.slice(info.logs.length - 100)
           }
@@ -270,7 +264,7 @@ export default {
             if (data.message) {
               that.$notify({
                 type: 'error',
-                title: '错误',
+                title: 'Error',
                 message: data.message
               })
               that.getLastOper(that.curSockObj)
@@ -298,7 +292,7 @@ export default {
     formatStatus(code) {
       let res = this.statusList.find(item => item.code === code)
       if (!res) {
-        res = {code: 1, name: '获取中', color: 'info'}
+        res = {code: 1, name: 'Fetching', color: 'info'}
       }
       return res
     },

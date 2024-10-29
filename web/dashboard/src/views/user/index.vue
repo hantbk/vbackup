@@ -143,7 +143,7 @@ export default {
         if (valid) {
           this.buttonLoading = true
           fetchCreate(this.temp).then(() => {
-            this.$notify.success('Creation successful!')
+            this.$notify.success('Create successful!')
             this.buttonLoading = false
             this.dialogFormVisible = false
             this.getList()
@@ -183,13 +183,13 @@ export default {
       }).then(() => {
         this.listLoading = true
         fetchDel(id).then(() => {
-          this.$notify.success('Deletion successful!')
+          this.$notify.success('Delete successful!')
           this.getList()
         }).finally(() => {
           this.listLoading = false
         })
       }).catch(() => {
-        this.$notify.info('Deletion canceled')
+        this.$notify.info('Delete canceled')
       })
     },
 
