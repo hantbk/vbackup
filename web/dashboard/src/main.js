@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import enLocale from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
 
 import Cookies from 'js-cookie'
 
@@ -21,6 +23,9 @@ import * as filters from './filters' // global filters
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })
+
+// Set English as the locale for element-ui
+locale.use(enLocale)
 
 // register global utility filters
 Object.keys(filters).forEach(key => {

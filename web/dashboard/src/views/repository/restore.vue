@@ -6,7 +6,7 @@
           <el-cascader
             v-model="pathQuery"
             :options="hostList"
-            :props="{ expandTrigger: 'hover' }"
+            :props="{ expandTrigger: 'hover', noDataText: 'No data available' }"
             clearable
             placeholder="Input content to search"
             filterable
@@ -29,9 +29,9 @@
         <el-col :xs="8" :sm="8" :lg="8" class="card-panel-col">
           <el-card class="box-card">
             <div slot="header">
-              <p>主机：{{ listQuery.host + (list.length > 0 ? '(' + list[0].username + ')' : '') }}</p>
-              <p>路径：{{ listQuery.path }}</p>
-              <p>合计：{{ total }}</p>
+              <p>Host: {{ listQuery.host + (list.length > 0 ? '(' + list[0].username + ')' : '') }}</p>
+              <p>Path: {{ listQuery.path }}</p>
+              <p>Total: {{ total }}</p>
             </div>
             <el-collapse v-model="activeName" accordion>
               <el-collapse-item :title="snaps.name" :name="snaps.name" :key="i" v-for="(snaps, i) in snapList">
@@ -72,7 +72,7 @@
                         clearable
                         @clear="searchFile"
                         class="input-with-select">
-                <el-select v-model="fileSearch.type" slot="prepend" placeholder="请选择">
+                <el-select v-model="fileSearch.type" slot="prepend" placeholder="Please select">
                   <el-option
                     v-for="(item, index) in searchType"
                     :key="index"
@@ -89,6 +89,7 @@
               node-key="id"
               v-loading="treeLoading"
               accordion
+              empty-text="No data available"
               expand-on-click-node @node-expand="getFiles">
               <span class="custom-tree-node" slot-scope="{ node, data }" @click="moreClick(data,node)">
                 <div class="file-title">

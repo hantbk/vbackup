@@ -16,7 +16,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="getList">Query</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="getList">Search</el-button>
         </el-form-item>
       </el-form>
     </div>

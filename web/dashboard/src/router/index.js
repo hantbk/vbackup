@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from 'vue'
 import Router from 'vue-router'
 /* Layout */
@@ -46,17 +47,25 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
-    hidden: true
+    hidden: true,
   },
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
-    hidden: true
+    // hidden: true,
+    meta: {
+      title: 'Page 404',
+      icon: '404'
+    },
   },
   {
     path: '/403',
     component: () => import('@/views/error-page/403'),
-    hidden: true
+    // hidden: true,
+    meta: {
+      title: 'Page 403',
+      icon: 'el-icon-lock'
+    },
   },
   {
     path: '/',
@@ -106,7 +115,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/repository/index'),
         name: 'RepositoryList',
-        meta: { title: 'Repository', noCache: true }
+        meta: { title: 'Repository', noCache: true },
       },
       {
         path: 'restore/:id',
@@ -154,6 +163,8 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'Task',
+    // Uncomment the following lines
+    hidden: true,
     meta: {
       title: '',
       icon: 'list'
@@ -172,6 +183,8 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'User',
+    // Uncomment the following lines
+    hidden: true,
     meta: {
       title: '',
       icon: 'el-icon-user-solid'
@@ -190,6 +203,8 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'Log',
+    // Uncomment the following lines
+    hidden: true,
     meta: {
       title: '',
       icon: 'nested'
@@ -200,6 +215,16 @@ export const asyncRoutes = [
         component: () => import('@/views/log/index'),
         name: 'LogList',
         meta: { title: 'Operation Log' }
+      }
+    ]
+  },
+  {
+    "path": "external-link",
+    "component": Layout,
+    "children": [
+      {
+        "path": "https://github.com/hantbk/vbackup",
+        "meta": { "title": "Repo Github", "icon": "link" }
       }
     ]
   },

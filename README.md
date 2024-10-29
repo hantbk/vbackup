@@ -4,7 +4,7 @@
 
 <p align="center"><b>A Simple, Open-Source, and Modern Web UI for Restic</b></p>
 
-<div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
+<!-- <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
     <a href="https://goreportcard.com/report/github.com/hantbk/vbackup">
         <img src="https://goreportcard.com/badge/github.com/hantbk/vbackup" alt="Go Report Card" />
     </a>
@@ -26,7 +26,7 @@
     <a href="https://github.com/hantbk/vbackup/actions/workflows/release.yml">
         <img src="https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg" alt="Release Status" />
     </a>
-</div>
+</div> -->
 
 ## Overview
 
