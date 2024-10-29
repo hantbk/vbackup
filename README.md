@@ -1,6 +1,6 @@
 # vBackup
 
-<p align="center"><a href="https://github.com/hantbk/vbackup" target="_blank"><img src="./web/dashboard/src/assets/logo/vbackup.png" alt="vBackup" width="500" /></a></p>
+<p align="center"><a href="https://github.com/hantbk/vbackup" target="_blank"><img src="./web/dashboard/src/assets/logo/vbackup-bar.png" alt="vBackup" width="500" /></a></p>
 
 <p align="center"><b>A Simple, Open-Source, and Modern Web UI for Restic</b></p>
 

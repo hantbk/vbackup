@@ -5,7 +5,7 @@
         <img src="../../../assets/logo/vbackup.png" class="sidebar-logo">
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img src="../../../assets/logo/vbackup-bar.png" class="sidebar-logo">
+        <img src="../../../assets/logo/vbackup.png" class="sidebar-logo">
       </router-link>
     </transition>
   </div>
@@ -42,7 +42,7 @@ export default {
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: 80px;
+  height: 50px;
   line-height: 50px;
   background: #ecf2f3;
   text-align: center;
@@ -53,7 +53,7 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      height: 80px;
+      height: 50px;
       vertical-align: middle;
       margin-right: 12px;
     }

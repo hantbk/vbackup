@@ -36,7 +36,7 @@
     <div class="handle-box">
       <el-button type="primary" icon="el-icon-plus" class="mr5" @click="handleAdd">Create</el-button>
     </div>
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" empty-text="No data available">
       <el-table-column align="center" :label="'ID' | i18n" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>

@@ -30,7 +30,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table :data="list" border fit highlight-current-row style="width: 100%" empty-text="No data available">
       <el-table-column align="center" :label="'ID' | i18n" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>

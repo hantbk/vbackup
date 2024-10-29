@@ -4,7 +4,7 @@
       <el-button type="success" icon="el-icon-plus" class="mr5" @click="handleAdd">Create</el-button>
       <el-button type="primary" icon="el-icon-search" @click="getList">Search</el-button>
     </div>
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" empty-text="No data available">
       <el-table-column prop="id" align="center" label="ID"/>
       <el-table-column prop="userName" align="center" label="Account"/>
       <el-table-column prop="nickName" align="center" label="Username"/>
