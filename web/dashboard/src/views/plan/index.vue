@@ -93,7 +93,7 @@
       :visible.sync="dialogFormVisible"
       @dragDialog="handleDrag"
     >
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="150px">
         <el-form-item label="Name" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
@@ -114,11 +114,11 @@
         </el-form-item>
         <el-form-item label="Cron Expression" prop="execTimeCron">
           <el-popover v-model="cronPopover">
-            <cron @change="changeCron" @close="cronPopover=false"/>
+            <cron @change="changeCron" @close="cronPopover=false" i18n="en"/>
             <el-input
               slot="reference"
               v-model="temp.execTimeCron"
-              placeholder="Please enter scheduling strategy"
+              placeholder="Please enter schedule strategy"
               clearable
               @click="cronPopover=true"
             />
@@ -126,7 +126,7 @@
           <el-button type="text" @click="cronNext(temp.execTimeCron)">Next Execution Time</el-button>
           <span style="margin-left: 20px;color: red">Note: The last position 'year' only supports every year (*), other values are invalid</span>
         </el-form-item>
-        <el-form-item label="Read Concurrency" prop="ReadConcurrency">
+        <el-form-item label="Read Concurrency (Max Threads)" prop="ReadConcurrency">
           <el-input v-model="temp.readConcurrency" clearable>
             <template slot="append">Default 2</template>
           </el-input>
