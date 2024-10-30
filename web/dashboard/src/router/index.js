@@ -52,20 +52,12 @@ export const constantRoutes = [
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
-    // hidden: true,
-    meta: {
-      title: 'Page 404',
-      icon: '404'
-    },
+    hidden: true,
   },
   {
     path: '/403',
     component: () => import('@/views/error-page/403'),
-    // hidden: true,
-    meta: {
-      title: 'Page 403',
-      icon: 'el-icon-lock'
-    },
+    hidden: true,
   },
   {
     path: '/',
@@ -163,8 +155,6 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'Task',
-    // Uncomment the following lines
-    hidden: true,
     meta: {
       title: '',
       icon: 'list'
@@ -183,8 +173,6 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'User',
-    // Uncomment the following lines
-    hidden: true,
     meta: {
       title: '',
       icon: 'el-icon-user-solid'
@@ -203,8 +191,6 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     name: 'Log',
-    // Uncomment the following lines
-    hidden: true,
     meta: {
       title: '',
       icon: 'nested'
