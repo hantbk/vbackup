@@ -4,6 +4,8 @@ import (
 	"io"
 	"sync"
 	"time"
+
+	"github.com/hantbk/vbackup/internal/consts"
 )
 
 // "MaxErrorNum" is the maximum amount of data stored, used in conjunction with "limitNum."
@@ -32,3 +34,97 @@ const (
 	Success = 3
 	Error   = 4
 )
+
+func NewSprintf(task WsTaskInfo) *Sprintf {
+	return &Sprintf{
+		taskInfo:       task,
+		Sprints:        make([]*Sprint, 0),
+		MinUpdatePause: time.Second,
+		limitNum:       0,
+	}
+}
+
+func (sf *Sprintf) UpdateTaskInfo(task WsTaskInfo) {
+	sf.taskInfo = task
+}
+
+func (sf *Sprintf) SetMinUpdatePause(d time.Duration) {
+	sf.MinUpdatePause = d
+}
+
+// "ResetLimitNum" resets the maximum log entry limit.
+func (sf *Sprintf) ResetLimitNum() {
+	sf.limitNumLock.Lock()
+	defer sf.limitNumLock.Unlock()
+	sf.limitNum = 0
+}
+
+func (sf *Sprintf) Append(level int, str string) {
+	sf.AppendByForce(level, str, true)
+}
+
+func (sf *Sprintf) AppendByForce(level int, str string, force bool) {
+	s := newSprint(level, str, false)
+	sf.send(s, force)
+	sf.Sprints = append(sf.Sprints, s)
+}
+
+func (sf *Sprintf) AppendLimit(level int, str string) {
+	sf.limitNumLock.Lock()
+	defer sf.limitNumLock.Unlock()
+	if sf.limitNum < MaxErrorNum {
+		sf.AppendByForce(level, str, false)
+	}
+	sf.limitNum++
+}
+
+func (sf *Sprintf) AppendForClear(level int, str string, save bool) {
+	s := newSprint(level, str, true)
+	sf.send(s, false)
+	if save {
+		sf.Sprints = append(sf.Sprints, s)
+	}
+}
+
+func (sf *Sprintf) SendAllLog() {
+	for i, s := range sf.Sprints {
+		if i == len(sf.Sprints)-1 {
+			sf.send(s, true)
+			continue
+		}
+		if s.Clear && sf.Sprints[i+1].Clear {
+			continue
+		}
+		// 只发送最后100条
+		if i < len(sf.Sprints)-100 {
+			continue
+		}
+		sf.send(s, true)
+	}
+}
+
+func newSprint(level int, str string, clear bool) *Sprint {
+	s := &Sprint{}
+	s.Text = str
+	s.Time = time.Now().Format(consts.Custom)
+	s.Level = level
+	s.Clear = clear
+	return s
+}
+
+func (sf *Sprintf) send(s interface{}, force bool) {
+	if !force && (time.Since(sf.lastUpdate) < sf.MinUpdatePause || sf.MinUpdatePause == 0) {
+		return
+	}
+	sf.lastUpdate = time.Now()
+	sf.taskInfo.SendMsg(s)
+}
+
+func (sf *Sprintf) Write(p []byte) (n int, err error) {
+	text := string(p)
+	s := &Sprint{}
+	s.Text = text
+	sf.send(s, false)
+	sf.Sprints = append(sf.Sprints, s)
+	return len(text), nil
+}
