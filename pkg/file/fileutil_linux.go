@@ -1,5 +1,5 @@
-//go:build darwin
-// +build darwin
+//go:build linux
+// +build linux
 
 package fileutil
 
@@ -33,11 +33,12 @@ func CopyFile(src, dst string) error {
 	defer destination.Close()
 
 	buffer := bufio.NewWriterSize(destination, 65536) // The buffer size can be customized, such as 64KB or 1MB
+
 	_, err = io.Copy(buffer, source)
 	if err != nil {
 		return err
 	}
-	if err := buffer.Flush(); err != nil {
+	if err = buffer.Flush(); err != nil {
 		return err
 	}
 	return nil
@@ -52,12 +53,18 @@ func ReplaceHomeDir(path string) string {
 
 func Exist(name string) bool {
 	_, err := os.Stat(FixPath(name))
-	return !os.IsNotExist(err)
+	if !os.IsNotExist(err) {
+		return true
+	}
+	return false
 }
 
 func Mkdir(path string, mode os.FileMode) bool {
 	err := os.Mkdir(path, mode)
-	return err == nil
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func HomeDir() string {
@@ -73,19 +80,18 @@ func FixPath(path string) string {
 }
 
 func ListDir(path string) ([]*model.FileInfo, error) {
-	nodes, err := ioutil.ReadDir(FixPath(path))
+	dirs, err := ioutil.ReadDir(FixPath(path))
 	if err != nil {
 		return nil, err
 	}
 	var files []*model.FileInfo
-	var dirs []*model.FileInfo
 	osType := runtime.GOOS
-	for _, dir := range nodes {
+	for _, dir := range dirs {
 		var ct time.Time
 		var statT *syscall.Stat_t
-		if osType == "darwin" {
+		if osType == "linux" {
 			statT = dir.Sys().(*syscall.Stat_t)
-			ct = time.Unix(statT.Birthtimespec.Sec, statT.Birthtimespec.Nsec)
+			ct = time.Unix(statT.Ctim.Sec, statT.Ctim.Nsec)
 			sepa := ""
 			if !strings.HasSuffix(path, string(filepath.Separator)) {
 				sepa = string(filepath.Separator)
@@ -101,15 +107,10 @@ func ListDir(path string) ([]*model.FileInfo, error) {
 				Uid:        int(statT.Uid),
 				CreateTime: ct.Format(consts.Custom),
 			}
-			if dir.IsDir() {
-				dirs = append(dirs, f)
-			} else {
-				files = append(files, f)
-			}
-
+			files = append(files, f)
 		}
 	}
-	return append(dirs, files...), nil
+	return files, nil
 
 }
 
