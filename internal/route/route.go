@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/hantbk/vbackup/internal/api"
+	"github.com/hantbk/vbackup/internal/server"
+	"github.com/hantbk/vbackup/internal/service/v1/user"
 	"github.com/kataras/iris"
 )
 

@@ -9,7 +9,7 @@ type Config struct {
 }
 
 type PrometheusConfig struct {
-	Enabled bool `yaml:"enabled"`
+	Enable bool `yaml:"enable"`
 }
 
 type ServerConfig struct {

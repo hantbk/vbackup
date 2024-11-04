@@ -9,6 +9,9 @@ import (
 
 	"github.com/hantbk/vbackup/internal/consts/global"
 	"github.com/hantbk/vbackup/internal/consts/system_status"
+	"github.com/hantbk/vbackup/internal/server"
+	"github.com/hantbk/vbackup/pkg/utils/cmd"
+	"github.com/hantbk/vbackup/pkg/utils/http"
 )
 
 func Upgrade(version string) error {

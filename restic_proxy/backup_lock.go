@@ -6,6 +6,7 @@ import (
 
 	"github.com/fanjindong/go-cache"
 	"github.com/hantbk/vbackup/internal/consts"
+	"github.com/hantbk/vbackup/internal/server"
 )
 
 func BackupLock(repo int, path string) bool {
