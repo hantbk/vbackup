@@ -8,6 +8,11 @@ import (
 	"github.com/kataras/iris/v12/context"
 
 	"github.com/hantbk/vbackup/internal/api/v1/dashboard"
+	"github.com/hantbk/vbackup/internal/api/v1/operation"
+	"github.com/hantbk/vbackup/internal/api/v1/plan"
+	"github.com/hantbk/vbackup/internal/api/v1/policy"
+	"github.com/hantbk/vbackup/internal/api/v1/repository"
+	"github.com/hantbk/vbackup/internal/api/v1/task"
 	"github.com/hantbk/vbackup/internal/consts/system_status"
 	"github.com/hantbk/vbackup/internal/entity/v1/oplog"
 	"github.com/hantbk/vbackup/internal/model"
@@ -105,13 +110,13 @@ func AddV1Route(app iris.Party) {
 	v1Party.Use(jwtHandler())
 	v1Party.Use(logHandler())
 	dashboard.Install(v1Party)
-	// user.Install(v1Party)
-	// restic.Install(v1Party)
-	// system.Install(v1Party)
-	// repository.Install(v1Party)
-	// plan.Install(v1Party)
-	// task.Install(v1Party)
-	// operation.Install(v1Party)
-	// policy.Install(v1Party)
-	// ws.Install(v1Party)
+	user.Install(v1Party)
+	restic.Install(v1Party)
+	system.Install(v1Party)
+	repository.Install(v1Party)
+	plan.Install(v1Party)
+	task.Install(v1Party)
+	operation.Install(v1Party)
+	policy.Install(v1Party)
+	ws.Install(v1Party)
 }

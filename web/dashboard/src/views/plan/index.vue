@@ -113,7 +113,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Cron Expression" prop="execTimeCron">
-          <el-popover v-model="cronPopover" lang="en">
+          <el-popover v-model="cronPopover">
             <cron @change="changeCron" @close="cronPopover=false" i18n="en"/>
             <el-input
               slot="reference"

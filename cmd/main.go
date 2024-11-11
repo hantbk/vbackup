@@ -51,7 +51,7 @@ var resetOtpCmd = &cobra.Command{
 			fmt.Println("Username cannot be empty.")
 			return
 		}
-		fmt.Println(fmt.Sprintf("Disabling two-factor authentication for: %s.", username))
+		fmt.Println(fmt.Printf("Disabling two-factor authentication for: %s.", username))
 		cmdServer.Instance(configPath).ClearOtp(username, 0)
 	},
 }
@@ -68,7 +68,7 @@ var resetPwdCmd = &cobra.Command{
 			fmt.Println("Username cannot be empty.")
 			return
 		}
-		fmt.Println(fmt.Sprintf("Resetting password for: %s.", username))
+		fmt.Println(fmt.Printf("Resetting password for: %s.", username))
 		cmdServer.Instance(configPath).ClearPwd(username, 0)
 	},
 }
