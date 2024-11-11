@@ -23,9 +23,6 @@ jobs:
       - name: Build Web Dashboard
         run: make build_web_dashboard
 
-      - name: Clean dist Directory
-        run: rm -rf dist  # Remove the dist directory to ensure a clean state
-
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
