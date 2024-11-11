@@ -8,6 +8,6 @@ type LockInfo struct {
 	Hostname  string    `json:"hostname"`
 	Username  string    `json:"username"`
 	PID       int       `json:"pid"`
-	UID       int       `json:"uid,omitempty"`
-	GID       int       `json:"gid,omitempty"`
+	UID       uint32    `json:"uid,omitempty"`
+	GID       uint32    `json:"gid,omitempty"`
 }
