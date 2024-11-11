@@ -17,7 +17,7 @@ before:
 
 builds:
   - id: vbackup
-    main: ./vbackup/cmd  # Path to the folder containing main.go
+    main: ./cmd  # Path to the folder containing main.go
     ldflags: "-s -w"
     env:
       - CGO_ENABLED=0  # Disable cgo for static linking
