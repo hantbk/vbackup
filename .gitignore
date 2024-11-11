@@ -48,3 +48,4 @@ types/v3-generated.d.ts
 .vscode
 
 dist/
+web/
