@@ -46,3 +46,5 @@ types/v3-generated.d.ts
 .idea/*
 .vscode/*
 .vscode
+
+dist/

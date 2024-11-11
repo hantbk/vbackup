@@ -1,0 +1,49 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    # Clean up Go modules and ensure dependencies are tidy
+    - go mod tidy
+    # Optionally run go generate if your project uses it
+    - go generate ./...
+
+builds:
+  # Set up environment variables and specify the supported OS and architectures
+  - env:
+      - CGO_ENABLED=0 # Disable cgo for static linking
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+# Archives settings
+archives:
+  # Default archive format is tar.gz
+  - format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_{{ .Tag }}_{{ .Os | title }}_{{ .Arch }}
+    format_overrides:
+      # Use zip for Windows archives instead of tar.gz
+      - goos: windows
+        format: zip
+
+# Changelog configuration
+changelog:
+  sort: asc # Sort changelog entries in ascending order
+  filters:
+    exclude:
+      - "^docs:" # Exclude documentation-related commits from changelog
+      - "^test:" # Exclude test-related commits from changelog
+
+
