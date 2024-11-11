@@ -3,25 +3,47 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "v*"  # Trigger on version tags (e.g., v1.0.0)
 
 jobs:
   goreleaser:
     name: "Release Binary"
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch full history to ensure correct tags
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.23
+          go-version: 1.23  # Set your desired Go version
+
+      - name: Cache Go Modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install GoReleaser
+        run: curl -sSL https://github.com/goreleaser/goreleaser/releases/download/v${{ github.event.release.tag_name }}/goreleaser_Linux_x86_64.tar.gz | tar xz
 
       - name: Build Web Dashboard
-        run: make build_web_dashboard
+        run: make build_web_dashboard  # Run your specific build command for the web dashboard
+
+      - name: Build Go Binary
+        run: |
+          # Prepare for Go build with required flags
+          GOARCH=$(go env GOARCH)
+          GOOS=$(go env GOOS)
+          VERSION=$(cat VERSION)
+          BUILD_TIME=$(date +"%Y%m%d%H%M")
+          LDFLAGS="-ldflags '-s -w -X github.com/hantbk/vbackup.BuildTime=${BUILD_TIME} -X github.com/hantbk/vbackup.V=${VERSION}'"
+          make build_go  # Ensure that the makefile has the build_go command
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -29,4 +51,5 @@ jobs:
           version: latest
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token to authenticate
+
