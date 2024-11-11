@@ -55,6 +55,44 @@
 
 ## Installation
 
+### Linux
+
+```bash
+curl -sSL https://raw.githubusercontent.com/hantbk/vbackup/refs/heads/main/quick_start.sh -o quick_start.sh && sh quick_start.sh
+```
+
+### MacOS
+
+```bash
+curl -sSL https://raw.githubusercontent.com/hantbk/vbackup/refs/heads/main/quick_start.sh -o quick_start.sh && sh quick_start.sh
+```
+
+### Docker
+
+```bash
+mkdir -p /data/vbackup
+docker run -d --name vbackup --restart=always -v /data:/data -v /data/vbackup:/root/.vbackup -p 8012:8012 --user root --hostname ${HOSTNAME} vbackup/vbackup
+docker logs vbackup
+```
+
+### Docker Compose
+
+```yaml
+version: '3.7'
+services:
+  vbackup:
+    image: hantbk/vbackup
+    container_name: vbackup
+    restart: always
+    volumes:
+      - /data:/data
+      - /data/vbackup:/root/.vbackup
+    ports:
+      - "8012:8012"
+    user: "root"
+    hostname: ${HOSTNAME}
+```
+
 ## Quick Start
 
 ## Documentation

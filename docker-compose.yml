@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  vbackup:
+    image: hantbk/vbackup
+    container_name: vbackup
+    restart: always
+    volumes:
+      - /data:/data
+      - /data/vbackup:/root/.vbackup
+    ports:
+      - "8012:8012"
+    user: "root"
+    hostname: ${HOSTNAME}
