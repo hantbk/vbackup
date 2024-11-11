@@ -16,6 +16,9 @@ before:
     - go generate ./...
 
 builds:
+  - id: vbackup
+    main: ./vbackup/cmd
+    ldflags: -s -w
   # Set up environment variables and specify the supported OS and architectures
   - env:
       - CGO_ENABLED=0 # Disable cgo for static linking
