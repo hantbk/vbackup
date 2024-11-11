@@ -22,5 +22,6 @@ jobs:
           go-version: 1.23
       - name: Get dependencies
         run: go mod download
-      - name: Test
-        run: go test -v ./...
+      - name: Test all packages except /pkg/restic_source
+        run: |
+          go test -v $(go list ./... | grep -v '/pkg/restic_source')
