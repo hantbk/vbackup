@@ -7,12 +7,13 @@ import (
 
 	"github.com/kataras/iris/v12/context"
 
+	"github.com/hantbk/vbackup/internal/api/v1/dashboard"
 	"github.com/hantbk/vbackup/internal/consts/system_status"
 	"github.com/hantbk/vbackup/internal/entity/v1/oplog"
+	"github.com/hantbk/vbackup/internal/model"
 	"github.com/hantbk/vbackup/internal/server"
 	"github.com/hantbk/vbackup/internal/service/v1/common"
 	logser "github.com/hantbk/vbackup/internal/service/v1/oplog"
-	"github.com/hantbk/vbackup/internal/model"
 	"github.com/hantbk/vbackup/pkg/utils"
 	"github.com/kataras/iris/v12"
 )
@@ -98,4 +99,19 @@ func logHandler() iris.Handler {
 	}
 }
 
-
+func AddV1Route(app iris.Party) {
+	// API v1 collection
+	v1Party := app.Party("/v1")
+	v1Party.Use(jwtHandler())
+	v1Party.Use(logHandler())
+	dashboard.Install(v1Party)
+	// user.Install(v1Party)
+	// restic.Install(v1Party)
+	// system.Install(v1Party)
+	// repository.Install(v1Party)
+	// plan.Install(v1Party)
+	// task.Install(v1Party)
+	// operation.Install(v1Party)
+	// policy.Install(v1Party)
+	// ws.Install(v1Party)
+}

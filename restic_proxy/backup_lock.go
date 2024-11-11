@@ -9,6 +9,7 @@ import (
 	"github.com/hantbk/vbackup/internal/server"
 )
 
+// BackupLock lock backup process
 func BackupLock(repo int, path string) bool {
 	key := consts.Key("BackupIsRun", strconv.Itoa(repo), path)
 	c := server.Cache()
@@ -21,7 +22,7 @@ func BackupLock(repo int, path string) bool {
 	}
 }
 
-func BackupUnlock(repo int, path string) {
+func BackupUnLock(repo int, path string) {
 	key := consts.Key("BackupIsRun", strconv.Itoa(repo), path)
 	c := server.Cache()
 	c.Del(key)

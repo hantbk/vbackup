@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/hantbk/vbackup/internal/model"
+	"github.com/hantbk/vbackup/internal/server"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/jwt"
 )
@@ -11,12 +12,12 @@ import (
 var jwtSigner *jwt.Signer
 var JwtKey string
 
-// func InitJwt() {
-// 	JwtKey = server.Config().Jwt.Key
-// 	t := server.Config().Jwt.MaxAge
-// 	jwtMaxAge := time.Duration(t)
-// 	jwtSigner = jwt.NewSigner(jwt.HS256, JwtKey, jwtMaxAge*time.Second)
-// }
+func InitJwt() {
+	JwtKey = server.Config().Jwt.Key
+	t := server.Config().Jwt.MaxAge
+	jwtMaxAge := time.Duration(t)
+	jwtSigner = jwt.NewSigner(jwt.HS256, JwtKey, jwtMaxAge*time.Second)
+}
 
 func GetToken(data interface{}) (*model.TokenInfo, error) {
 	token, err := jwtSigner.Sign(data)
