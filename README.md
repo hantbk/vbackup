@@ -4,6 +4,11 @@
 
 <p align="center"><b>A Simple, Open-Source, and Modern Web UI for Restic</b></p>
 
+[![GitHub release](https://img.shields.io/github/release/hantbk/vbackup.svg)](https://github.com/hantbk/vbackup/releases/)
+[![Go version](https://img.shields.io/github/go-mod/go-version/hantbk/vbackup.svg)](https://github.com/hantbk/vbackup)
+[![CI Status](https://github.com/hantbk/vbackup/actions/workflows/ci.yml/badge.svg)](https://github.com/hantbk/vbackup/actions/workflows/ci.yml)
+[![Release Status](https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg)](https://github.com/hantbk/vbackup/actions/workflows/release.yml)
+
 <!-- <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
     <a href="https://goreportcard.com/report/github.com/hantbk/vbackup">
         <img src="https://goreportcard.com/badge/github.com/hantbk/vbackup" alt="Go Report Card" />
