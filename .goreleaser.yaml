@@ -17,11 +17,10 @@ before:
 
 builds:
   - id: vbackup
-    main: ./vbackup/cmd
-    ldflags: -s -w
-  # Set up environment variables and specify the supported OS and architectures
-  - env:
-      - CGO_ENABLED=0 # Disable cgo for static linking
+    main: ./vbackup/cmd  # Path to the folder containing main.go
+    ldflags: "-s -w"
+    env:
+      - CGO_ENABLED=0  # Disable cgo for static linking
     goos:
       - linux
       - darwin
