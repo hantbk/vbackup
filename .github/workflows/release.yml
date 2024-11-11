@@ -21,7 +21,7 @@ jobs:
           go-version: 1.23
 
       - name: Build Web Dashboard
-        run: make build_web_dashboard clean
+        run: make build_web_dashboard
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
