@@ -45,5 +45,3 @@ changelog:
     exclude:
       - "^docs:" # Exclude documentation-related commits from changelog
       - "^test:" # Exclude test-related commits from changelog
-
-
