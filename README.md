@@ -55,13 +55,7 @@
 
 ## Installation
 
-### Linux
-
-```bash
-curl -sSL https://raw.githubusercontent.com/hantbk/vbackup/refs/heads/main/quick_start.sh -o quick_start.sh && sh quick_start.sh
-```
-
-### MacOS
+### Linux/MacOS
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/hantbk/vbackup/refs/heads/main/quick_start.sh -o quick_start.sh && sh quick_start.sh
