@@ -3,6 +3,7 @@ package task
 import (
 	"sync"
 
+	"github.com/hantbk/vbackup/internal/model"
 	"github.com/hantbk/vbackup/internal/server"
 	wsTaskInfo "github.com/hantbk/vbackup/internal/store/ws_task_info"
 	"github.com/hantbk/vbackup/pkg/utils"
@@ -23,6 +24,10 @@ type TaskInfo struct {
 	id            int
 	bound         chan string
 	sockJSSession sockjs.Session
+	Name          string
+	Path          string
+	Progress      *model.StatusUpdate
+	wsTaskInfo.WsTaskInfo
 }
 
 func (ti *TaskInfo) GetId() int {
@@ -96,7 +101,7 @@ func (ti *TaskMap) Close(id int, reason string, status uint32) {
 	delete(ti.TaskInfos, id)
 }
 
-// GetCount returns the number of tasks
+// GetCount return number of task
 func (ti *TaskMap) GetCount() int {
 	return len(ti.TaskInfos)
 }
