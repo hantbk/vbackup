@@ -16,6 +16,7 @@ import (
 	"github.com/hantbk/vbackup/internal/api/v1/system"
 	"github.com/hantbk/vbackup/internal/api/v1/task"
 	"github.com/hantbk/vbackup/internal/api/v1/user"
+	"github.com/hantbk/vbackup/internal/api/v1/ws"
 	"github.com/hantbk/vbackup/internal/consts/system_status"
 	"github.com/hantbk/vbackup/internal/entity/v1/oplog"
 	"github.com/hantbk/vbackup/internal/model"
@@ -121,5 +122,5 @@ func AddV1Route(app iris.Party) {
 	task.Install(v1Party)
 	operation.Install(v1Party)
 	policy.Install(v1Party)
-	// ws.Install(v1Party)
+	ws.Install(v1Party)
 }
