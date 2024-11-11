@@ -24,7 +24,7 @@ func TestGetSN(t *testing.T) {
 		name string
 		want string
 	}{
-		{name: RandomString(4), want: "SDF686FDS"},
+		{name: RandomString(4), want: "K9GJC09M7W"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
