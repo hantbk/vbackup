@@ -7,6 +7,7 @@ import (
 	"runtime"
 
 	"github.com/hantbk/vbackup"
+	"github.com/hantbk/vbackup/internal/cmdServer"
 	"github.com/hantbk/vbackup/internal/route"
 	"github.com/hantbk/vbackup/internal/server"
 	"github.com/spf13/cobra"
