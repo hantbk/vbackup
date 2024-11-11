@@ -18,8 +18,6 @@ if [[ "$OSTYPE" =~ ^linux ]]; then
     os="Linux"
 elif [[ "$OSTYPE" =~ ^darwin ]]; then
     os="Darwin"
-elif [[ "$OSTYPE" =~ ^msys ]]; then
-    os="Windows"
 else
     echo "Unsupported operating system. Please refer to the official documentation."
     exit 1
@@ -37,7 +35,6 @@ VERSION_STRIPPED=${VERSION#v}
 
 # Define package file name
 package_file_name="vbackup_${VERSION}_${os}_${architecture}.tar.gz"
-[[ "$os" == "Windows" ]] && package_file_name="vbackup_${VERSION}_${os}_${architecture}.zip"
 
 # Define URLs for package and checksum files
 HASH_FILE_URL="https://github.com/hantbk/vbackup/releases/download/${VERSION}/vbackup_${VERSION_STRIPPED}_checksums.txt"
@@ -87,12 +84,7 @@ fi
 
 # Install function
 function install() {
-    if [[ "$os" == "Windows" ]]; then
-        unzip -o $1 -d /usr/local/bin/
-    else
-        tar -xzf $1 -C /usr/local/bin/ vbackup_server && chmod +x /usr/local/bin/vbackup_server
-    fi
-
+    tar -xzf $1 -C /usr/local/bin/ vbackup_server && chmod +x /usr/local/bin/vbackup_server
     if [[ "$os" == "Linux" ]]; then
         mv vbackup.service /etc/systemd/system/
         systemctl enable vbackup
