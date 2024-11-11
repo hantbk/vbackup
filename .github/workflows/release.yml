@@ -29,8 +29,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Update VERSION file
+        run: echo "${GITHUB_REF#refs/tags/}" > VERSION
+
       - name: Install GoReleaser
-        run: curl -sSL https://github.com/goreleaser/goreleaser/releases/download/v${{ github.event.release.tag_name }}/goreleaser_Linux_x86_64.tar.gz | tar xz
+        run: |
+          curl -sL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+          sudo mv ./bin/goreleaser /usr/local/bin/goreleaser
 
       - name: Build Web Dashboard
         run: make build_web_dashboard  # Run your specific build command for the web dashboard
