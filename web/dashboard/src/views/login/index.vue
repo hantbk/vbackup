@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="logo-container el-header">
-      <img src="../../assets/logo/vbackup-bar.png" class="logo">
+      <img src="../../assets/logo/vbackup.png" class="logo">
     </div>
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on"
              label-position="left">
@@ -58,8 +58,8 @@
       </el-button>
     </el-form>
     <div class="el-footer footer">
-      Technical Support:
-      <el-link href="" type="primary" :underline="false" target="_blank">vBackup</el-link>
+      <!-- Technical Support:
+      <el-link href="" type="primary" :underline="false" target="_blank">vBackup</el-link> -->
       <p>{{ version }}</p>
     </div>
   </div>
