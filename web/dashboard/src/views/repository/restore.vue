@@ -72,7 +72,7 @@
                         clearable
                         @clear="searchFile"
                         class="input-with-select">
-                <el-select v-model="fileSearch.type" slot="prepend" placeholder="Please select">
+                <el-select v-model="fileSearch.type" slot="prepend" placeholder="Please select" style="width: 170px">
                   <el-option
                     v-for="(item, index) in searchType"
                     :key="index"
@@ -119,7 +119,7 @@
       title="Restore Options"
       :visible.sync="dialogFormVisible"
     >
-      <el-form ref="dataForm" label-position="left" label-width="150px">
+      <el-form ref="dataForm" label-position="left" label-width="260px">
         <el-form-item label="Restore to: " prop="path">
           <el-input v-model="restoreOpt.dirCur" disabled>
             <el-button slot="append" @click="openDirSelect()">Select</el-button>

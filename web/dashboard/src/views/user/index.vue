@@ -33,7 +33,7 @@
         :rules="rules"
         :model="temp"
         label-position="left"
-        label-width="90px"
+        label-width="150px"
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="Account" prop="userName">

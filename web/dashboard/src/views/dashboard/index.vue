@@ -56,13 +56,13 @@
     </el-row>
     <el-row :gutter="40" class="panel-group">
       <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
-        <pie_chart title="Backup Data Volume Statistics" :cdata="chartsize" theme="shine" seriesname="Unit: GB"/>
+        <pie_chart title="Backup Data Volume" :cdata="chartsize" theme="shine" seriesname="Unit: GB"/>
       </el-col>
       <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
-        <pie_chart title="Backup File Count Statistics" :cdata="chartfile" theme="shine"/>
+        <pie_chart title="Backup File Count" :cdata="chartfile" theme="shine"/>
       </el-col>
       <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
-        <pie_chart title="Backup Snapshot Count Statistics" :cdata="chartsnap" theme="shine"/>
+        <pie_chart title="Backup Snapshot Count" :cdata="chartsnap" theme="shine"/>
       </el-col>
     </el-row>
   </div>

@@ -37,7 +37,7 @@
       title="Change Password"
       :visible.sync="dialogFormVisible"
     >
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="150px">
         <el-form-item label="Old Password" prop="oldPassword">
           <el-input v-model="temp.oldPassword" type="password" clearable/>
         </el-form-item>
