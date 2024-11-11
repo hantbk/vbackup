@@ -20,35 +20,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.23  # Set your desired Go version
-
-      - name: Cache Go Modules
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Update VERSION file
-        run: echo "${GITHUB_REF#refs/tags/}" > VERSION
-
-      - name: Install GoReleaser
-        run: |
-          curl -sL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
-          sudo mv ./bin/goreleaser /usr/local/bin/goreleaser
-
+      
       - name: Build Web Dashboard
-        run: make build_web_dashboard  # Run your specific build command for the web dashboard
-
-      - name: Build Go Binary
-        run: |
-          # Prepare for Go build with required flags
-          GOARCH=$(go env GOARCH)
-          GOOS=$(go env GOOS)
-          VERSION=$(cat VERSION)
-          BUILD_TIME=$(date +"%Y%m%d%H%M")
-          LDFLAGS="-ldflags '-s -w -X github.com/hantbk/vbackup.BuildTime=${BUILD_TIME} -X github.com/hantbk/vbackup.V=${VERSION}'"
-          make build_go  # Ensure that the makefile has the build_go command
+        run: make build_web_dashboard
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -56,5 +30,4 @@ jobs:
           version: latest
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token to authenticate
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
