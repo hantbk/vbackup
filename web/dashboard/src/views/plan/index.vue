@@ -93,7 +93,7 @@
       :visible.sync="dialogFormVisible"
       @dragDialog="handleDrag"
     >
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="150px">
         <el-form-item label="Name" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
@@ -113,8 +113,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Cron Expression" prop="execTimeCron">
-          <el-popover v-model="cronPopover">
-            <cron @change="changeCron" @close="cronPopover=false"/>
+          <el-popover v-model="cronPopover" lang="en">
+            <cron @change="changeCron" @close="cronPopover=false" i18n="en"/>
             <el-input
               slot="reference"
               v-model="temp.execTimeCron"

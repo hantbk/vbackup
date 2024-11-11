@@ -122,7 +122,7 @@ service.interceptors.response.use(
         router.push('/403')
       } else {
         Notification({
-          title: '错误',
+          title: 'Error',
           message: res.message || 'Error',
           type: 'error'
         })
