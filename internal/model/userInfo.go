@@ -13,10 +13,10 @@ type RePwdData struct {
 	Password    string `json:"password"`
 }
 
-type UserInfo struct {
+type Userinfo struct {
 	Id        int        `json:"id"`
-	Username  string     `json:"username"`
-	Nickname  string     `json:"nickname"`
+	Username  string     `json:"userName"`
+	NickName  string     `json:"nickName"`
 	Email     string     `json:"email"`
 	Phone     string     `json:"phone"`
 	LastLogin string     `json:"lastLogin"`

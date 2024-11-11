@@ -7,7 +7,7 @@ import (
 
 	"github.com/hantbk/vbackup/internal/server"
 	"github.com/hantbk/vbackup/pkg/utils"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"gopkg.in/igm/sockjs-go.v2/sockjs"
 )
 
