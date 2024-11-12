@@ -1,10 +1,10 @@
 name: goreleaser
 
 on:
-  pull_request:
   push:
     tags:
-      - "*"
+      - "*"  # Run only for tags
+  pull_request:
 
 permissions:
   contents: write
@@ -13,6 +13,10 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
+      - name: Set VERSION from tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -27,30 +31,23 @@ jobs:
         run: make build_web_dashboard
 
       - name: Update VERSION
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          TAG_NAME=${GITHUB_REF##*/}
-          echo "Updating VERSION to $TAG_NAME"
-
-          # Ensure we are on the main branch
+          echo "Updating VERSION to $VERSION"
           git checkout main
-
-          # Update VERSION in file
-          sed -i 's/VERSION = ".*"/VERSION = "'$TAG_NAME'"/g' VERSION
-          
-          # Configure Git
+          sed -i 's/VERSION = ".*"/VERSION = "'$VERSION'"/g' VERSION
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Commit changes only if there are changes to commit
           git add VERSION
           if ! git diff --cached --quiet; then
-            git commit -m "Update VERSION to $TAG_NAME"
+            git commit -m "Update VERSION to $VERSION"
             git push origin main
           else
             echo "No changes in VERSION file to commit."
           fi
 
       - name: Run GoReleaser
+        if: startsWith(github.ref, 'refs/tags/')
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
@@ -60,12 +57,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
+        if: startsWith(github.ref, 'refs/tags/')
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           echo "Building and pushing Docker image with VERSION=$VERSION"
           docker buildx build \
