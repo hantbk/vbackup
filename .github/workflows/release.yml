@@ -35,9 +35,10 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add VERSION
           git commit -m "Update VERSION to $TAG_NAME"
-          git tag $TAG_NAME 
+          git tag $TAG_NAME  
           git push origin HEAD:main
           git push origin $TAG_NAME 
+
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
