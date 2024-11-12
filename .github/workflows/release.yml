@@ -1,18 +1,13 @@
-# .github/workflows/release.yml
 name: goreleaser
 
 on:
   pull_request:
   push:
-    # run only against tags
     tags:
       - "*"
 
 permissions:
   contents: write
-  # packages: write
-  # issues: write
-  # id-token: write
 
 jobs:
   goreleaser:
@@ -31,13 +26,49 @@ jobs:
       - name: Build web dashboard
         run: make build_web_dashboard
 
+      - name: Update VERSION
+        run: |
+          TAG_NAME=${GITHUB_REF##*/}
+          echo "Updating VERSION to $TAG_NAME"
+          sed -i 's/VERSION = ".*"/VERSION = "'$TAG_NAME'"/g' VERSION
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "Update VERSION to $TAG_NAME"
+          git push origin HEAD:main
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
-          # 'latest', 'nightly', or a semver
           version: "~> v2"
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_docker_image:
+    needs: goreleaser  # Ensures this job runs after `goreleaser` job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Push Docker Image
+        env:
+          VERSION: ${GITHUB_REF##*/}  # Tag version
+        run: |
+          docker buildx build \
+            --platform linux/arm64,linux/amd64 \
+            -t hantbk/vbackup:${VERSION} \
+            -t hantbk/vbackup:latest \
+            . --push

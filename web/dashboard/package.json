@@ -1,6 +1,6 @@
 {
   "name": "vbackup-web",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "backup-web",
   "scripts": {
     "dev": "vue-cli-service serve",
