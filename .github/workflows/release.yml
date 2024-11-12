@@ -43,13 +43,12 @@ jobs:
       - name: Update VERSION
         if: startsWith(github.ref, 'refs/tags/')
         run: |
+          VERSION=${GITHUB_REF##*/}
           echo "Updating VERSION to $VERSION"
           git checkout main
-          # Force-update the VERSION file
-          sed -i 's/VERSION = ".*"/VERSION = "'$VERSION'"/g' VERSION
+          echo "$VERSION" > VERSION
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          # Stage the file and check for changes
           git add VERSION
           if git diff --cached --quiet; then
             echo "No changes to commit for VERSION file"
@@ -72,12 +71,15 @@ jobs:
           install: true
           
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
+        id: meta2
         uses: docker/metadata-action@v4
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/vbackup
           tags: |
-            type=ref,event=tags
+            type=semver,pattern={{version}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: $VERSION
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
