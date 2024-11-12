@@ -30,22 +30,6 @@ jobs:
       - name: Build web dashboard
         run: make build_web_dashboard
 
-      - name: Update VERSION
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          echo "Updating VERSION to $VERSION"
-          git checkout main
-          sed -i 's/VERSION = ".*"/VERSION = "'$VERSION'"/g' VERSION
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add VERSION
-          if ! git diff --cached --quiet; then
-            git commit -m "Update VERSION to $VERSION"
-            git push origin main
-          else
-            echo "No changes in VERSION file to commit."
-          fi
-
       - name: Run GoReleaser
         if: startsWith(github.ref, 'refs/tags/')
         uses: goreleaser/goreleaser-action@v6
@@ -56,6 +40,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Update VERSION
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo "Updating VERSION to $VERSION"
+          git checkout main
+          sed -i 's/VERSION = ".*"/VERSION = "'$VERSION'"/g' VERSION
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "Update VERSION to $VERSION"
+          git push origin main
+
       - name: Log in to Docker Hub
         if: startsWith(github.ref, 'refs/tags/')
         uses: docker/login-action@v2
@@ -63,12 +59,28 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        id: buildx 
+        with:
+          install: true
+          
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/vbackup
+          tags: |
+            type=ref,event=tags
+
       - name: Build and Push Docker Image
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          echo "Building and pushing Docker image with VERSION=$VERSION"
-          docker buildx build \
-            --platform linux/arm64,linux/amd64 \
-            -t hantbk/vbackup:${VERSION} \
-            -t hantbk/vbackup:latest \
-            . --push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
