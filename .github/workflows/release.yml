@@ -66,29 +66,27 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        id: buildx 
+        id: buildx
         with:
           install: true
-          
+
       - name: Extract metadata (tags, labels) for Docker
-        id: meta2
+        id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/vbackup
+          images: ${{ secrets.DOCKER_USERNAME }}/vbackup 
           tags: |
+            type=ref,event=tags
+            type=ref,event=branch
             type=semver,pattern={{version}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: $VERSION
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Docker API Image
         uses: docker/build-push-action@v4
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }} 
           cache-from: type=gha
           cache-to: type=gha,mode=max
