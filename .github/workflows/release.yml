@@ -45,12 +45,18 @@ jobs:
         run: |
           echo "Updating VERSION to $VERSION"
           git checkout main
+          # Force-update the VERSION file
           sed -i 's/VERSION = ".*"/VERSION = "'$VERSION'"/g' VERSION
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # Stage the file and check for changes
           git add VERSION
-          git commit -m "Update VERSION to $VERSION"
-          git push origin main
+          if git diff --cached --quiet; then
+            echo "No changes to commit for VERSION file"
+          else
+            git commit -m "Update VERSION to $VERSION"
+            git push origin main
+          fi
 
       - name: Log in to Docker Hub
         if: startsWith(github.ref, 'refs/tags/')
