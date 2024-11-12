@@ -30,13 +30,25 @@ jobs:
         run: |
           TAG_NAME=${GITHUB_REF##*/}
           echo "Updating VERSION to $TAG_NAME"
+
+          # Ensure we are on the main branch
           git checkout main
+
+          # Update VERSION in file
           sed -i 's/VERSION = ".*"/VERSION = "'$TAG_NAME'"/g' VERSION
+          
+          # Configure Git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Commit changes only if there are changes to commit
           git add VERSION
-          git commit -m "Update VERSION to $TAG_NAME"
-          git push origin main
+          if ! git diff --cached --quiet; then
+            git commit -m "Update VERSION to $TAG_NAME"
+            git push origin main
+          else
+            echo "No changes in VERSION file to commit."
+          fi
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
