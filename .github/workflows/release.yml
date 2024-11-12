@@ -70,13 +70,13 @@ jobs:
         with:
           install: true
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata (tag, label) for Docker
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/vbackup 
           tags: |
-            type=ref,event=tags
+            type=ref,event=tag
             type=ref,event=branch
             type=semver,pattern={{version}}
 
