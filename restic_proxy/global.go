@@ -38,7 +38,7 @@ import (
 // TimeFormat is the format used for all timestamps printed by restic.
 const TimeFormat = "2006-01-02 15:04:05"
 
-var version = "0.0.0"
+var version = "0.16.5"
 
 type backendWrapper func(r restic.Backend) (restic.Backend, error)
 
