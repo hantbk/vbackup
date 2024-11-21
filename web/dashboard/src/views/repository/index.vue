@@ -85,18 +85,27 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" top="5vh">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="220px">
+
         <el-form-item label="Name" prop="name">
-          <el-input v-model="temp.name" clearable/>
+          <el-input v-model="temp.name" clearable />
         </el-form-item>
-        <el-form-item label="Storage Type" prop="type">
-          <el-select v-model="temp.type" placeholder="Please select" @change="this.onTypeChange">
-            <el-option v-for="item in typeList" :key="item.code" :label="item.name" :value="item.code"/>
-          </el-select>
-          <span class="repo-type-tips">{{ formatType(temp.type).tips }}</span>
-        </el-form-item>
-        <el-form-item label="Endpoint" prop="endPoint">
+
+      <el-form-item label="Storage Type" prop="type">
+        <el-select v-model="temp.type" placeholder="Please select" @change="onTypeChange">
+          <el-option v-for="item in typeList" :key="item.code" :label="item.name" :value="item.code" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item v-if="temp.type === 4" label="Path" prop="path">
+        <el-input v-model="temp.path" disabled>
+          <el-button slot="append" @click="openDirSelect()">Select</el-button>
+        </el-input>
+      </el-form-item>
+
+        <el-form-item v-if="temp.type===1||temp.type===2" label="Endpoint" prop="endPoint">
           <el-input v-model="temp.endPoint" :placeholder="endPointPlaceholder" clearable/>
         </el-form-item>
+
         <el-form-item v-if="temp.type===1||temp.type===2" label="Region" prop="region">
           <el-input v-model="temp.region" clearable/>
         </el-form-item>
@@ -144,6 +153,7 @@
           </el-input>
         </el-form-item>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           Cancel
@@ -157,13 +167,64 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog
+      title="Select Directory/Folder"
+      :visible.sync="dialogDirVisible"
+    >
+      <div>
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item class="breadcrumb-item" v-for="(item, index) in getDirSpea()" :key="index">
+            <span class="title" @click="lsDir(item.path,true)">{{ item.name }}</span>
+          </el-breadcrumb-item>
+        </el-breadcrumb>
+        <div class="filenodes">
+          <span class="custom-tree-node filenode" v-for="(item, index) in filteredDirList" :key="index"
+                :class="{active : dirCur === item.path}"
+                @dblclick.prevent="lsDir(item.path,item.isDir)"
+                @click="selectDir(item.path,item.isDir)">
+          <div class="file-title">
+            <i v-if="item.isDir" class="el-icon-folder"/>
+            <span style="margin-left: 5px;user-select: none;">{{ item.name }}</span>
+          </div>
+          <span>
+            <el-button
+              type="text"
+              class="confirmbtn"
+              size="mini"
+              @click="confirmDirSelect(item.path)">
+                    Confirm
+                  </el-button>
+          </span>
+        </span>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogDirVisible = false">
+          Cancel
+        </el-button>
+        <el-button
+          type="primary"
+          @click="confirmDirSelect()">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {fetchCreate, fetchDel, fetchList, fetchUpdate} from '@/api/repository'
 import {dateFormat} from '@/utils'
-import {repoStatusList, repoTypeList, compressionList} from "@/consts";
+import {repoStatusList, repoTypeList, compressionList} from "@/consts"
+import {fetchLs} from "@/api/system";
+
+// const os = require('os');
+
+// const username = os.userInfo().username;
+// const userHome = os.platform() === 'darwin' ? `/Users/${username}` : `/home/${username}`;
+
+// console.log('userHome', userHome);
 
 export default {
   name: 'RepositoryList',
@@ -178,6 +239,9 @@ export default {
       }
     }
     return {
+      dialogDirVisible: false,
+      dirList: [],
+      dirCur: userHome,
       typeList: repoTypeList,
       statusList: repoStatusList,
       compressionList: compressionList,
@@ -187,7 +251,7 @@ export default {
         name: '',
         type: '',
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       textMap: {
         update: 'Modify Repository',
@@ -195,6 +259,8 @@ export default {
       },
       dialogStatus: '',
       dialogFormVisible: false,
+      dialogVisible: false,
+      dialogdata: '',
       buttonLoading: false,
       endPointPlaceholder: '',
       temp: {
@@ -213,7 +279,8 @@ export default {
         password: '',
         confirmPassword: '',
         compression: 0,
-        packSize: 16
+        packSize: 16,
+        path: '/'
       },
       rules: {
         name: [{required: true, message: 'This field is required', trigger: 'blur'}],
@@ -231,6 +298,11 @@ export default {
   created() {
     this.getList()
   },
+  computed: {
+    filteredDirList() {
+      return this.dirList.filter(item => item.isDir);
+    }
+  },
   methods: {
     dateFormat(row, column, cellValue, index) {
       return dateFormat(cellValue, 'yyyy-MM-dd hh:mm')
@@ -241,6 +313,7 @@ export default {
         name: '',
         type: 4,
         endPoint: '',
+        path: '/',
         region: '',
         bucket: '',
         keyId: '',
@@ -250,8 +323,7 @@ export default {
         accountKey: '',
         accountId: '',
         password: '',
-        user: '',
-        authpwd: '',
+        confirmPassword: '',
         compression: 0,
         packSize: 16
       }
@@ -259,6 +331,9 @@ export default {
     },
     onTypeChange(val) {
       this.endPointPlaceholder = ''
+      if (val === 4) {
+        this.temp.path = '';
+      }
       switch (val) {
         case 1:
           this.endPointPlaceholder = 'http(s)://s3host:port'
@@ -374,12 +449,121 @@ export default {
       }).finally(() => {
         this.listLoading = false
       })
+    },
+    openDirSelect() {
+      this.dialogDirVisible = true
+      this.dirCur = this.temp.path || userHome
+      this.dirList = []
+      this.lsDir(this.dirCur)
+    },
+    confirmDirSelect(path) {
+      if (path) {
+        this.dirCur = path;
+      }
+      this.temp.path = this.dirCur;
+
+      if (this.temp.type === 4) {
+        this.temp.endPoint = this.temp.path;
+      }
+
+      if (!this.temp.name) {
+        this.temp.name = this.dirCur;
+      }
+      this.dialogDirVisible = false;
+    },
+    getDirSpea() {
+      var dirs = this.dirCur.split("/")
+      dirs.shift()
+      var res = []
+      var path = ''
+      dirs.forEach(n => {
+        if (n === '') {
+          return
+        }
+        path = path + '/' + n
+        res.push({
+          name: n,
+          path: path
+        })
+      })
+      res.unshift({
+        name: 'Root',
+        path: '/'
+      })
+      return res
+    },
+    selectDir(path, isdir) {
+      if (!isdir) {
+        return
+      }
+      this.dirCur = path
+    },
+    lsDir(path, isdir) {
+      if (!isdir) {
+        return
+      }
+      this.dirCur = path
+      var q = {
+        path: this.dirCur
+      }
+      fetchLs(q).then(res => {
+        this.dirList = res.data
+      })
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "src/styles/variables";
+
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+
+  .file-title {
+    font-size: 14px;
+    padding-right: 8px;
+  }
+}
+
+.active {
+  background: $light-blue;
+  color: $menuHover;
+}
+
+
+.filenodes {
+  margin-top: 10px;
+
+  .confirmbtn {
+    color: $menuHover;
+  }
+}
+
+.filenode:hover {
+  background-color: $light-blue;
+  cursor: pointer;
+  color: $menuHover;
+}
+
+.breadcrumb-item {
+  padding: 5px;
+}
+
+.breadcrumb-item:hover {
+  background-color: $light-blue;
+  cursor: pointer;
+  color: $menuHover;
+
+  .title {
+    color: $menuHover;
+  }
+}
+
 .el-dropdown-link {
   cursor: pointer;
   color: #409EFF;

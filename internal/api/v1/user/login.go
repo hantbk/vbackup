@@ -115,8 +115,11 @@ func login(ctx *context.Context, username, password string) *sysuser.SysUser {
 		utils.Set(errk, errcount+1, lockTime)
 		return nil
 	}
-	// fmt.Print("Email: ", u.Email)
-	// fmt.Print("Phone: ", u.Phone)
+
+	// fmt.Println("Username: ", u.Username)
+	// fmt.Println("NickName: ", u.NickName)
+	// fmt.Println("Email: ", u.Email)
+	// fmt.Println("Phone: ", u.Phone)
 
 	return u
 }
