@@ -172,6 +172,7 @@ export const asyncRoutes = [
     path: '/user',
     component: Layout,
     redirect: 'noRedirect',
+    roles: ['admin'],
     name: 'User',
     meta: {
       title: '',

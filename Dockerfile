@@ -31,7 +31,6 @@ RUN --mount=type=cache,target=/root/gopath apk update &&\
 RUN --mount=type=cache,target=/root/gopath make build_go
 
 FROM alpine:latest
-LABEL MAINTAINER="vbackup <captainnemot1k60@gmail.com>"
 ENV LANG C.UTF-8
 COPY --from=buildbin /vbackup/dist/vbackup_server_* /apps/vbackup_server
 COPY --from=buildbin /etc/localtime /etc/localtime

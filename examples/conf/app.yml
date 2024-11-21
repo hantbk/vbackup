@@ -23,4 +23,4 @@ jwt:
   # Token expiration time, in seconds
   maxAge: 1800
 prometheus:
-  enable: false
+  enable: true

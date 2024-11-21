@@ -16,6 +16,7 @@ func GetCurUser(ctx *context.Context) *model.Userinfo {
 	}
 	return u
 }
+
 func GetTokenExpires(ctx *context.Context) time.Time {
 	if ctx.GetHeader("Authorization") != "" {
 		vt := jwt.GetVerifiedToken(ctx)
