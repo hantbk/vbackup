@@ -46,3 +46,14 @@ export function fetchUpgradeVersion(data) {
     method: 'post'
   })
 }
+
+/**
+ * Retrieves the user's home directory path.
+ * @returns {AxiosPromise}
+ */
+export function fetchUserHomePath() {
+  return request({
+    url: '/system/userHome',
+    method: 'get'
+  })
+}

@@ -70,6 +70,18 @@ func latestVersionHandler() iris.Handler {
 	}
 }
 
+func userHomePathHandler() iris.Handler {
+	return func(ctx *context.Context) {
+		// Gọi hàm GetUserHomePath từ utils
+		homePath := utils.GetUserHomePath() 
+		if homePath == "" {
+			utils.ErrorStr(ctx, "Failed to retrieve the user's home directory")
+			return
+		}
+		ctx.Values().Set("data", homePath)
+	}
+}
+
 func Install(parent iris.Party) {
 	// System interfaces
 	sp := parent.Party("/system")
@@ -81,4 +93,7 @@ func Install(parent iris.Party) {
 	sp.Get("/version", versionHandler())
 
 	sp.Get("/version/latest", latestVersionHandler())
+
+	// User home path
+	sp.Get("/userHome", userHomePathHandler())
 }
