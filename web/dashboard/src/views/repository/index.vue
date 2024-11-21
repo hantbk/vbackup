@@ -217,14 +217,7 @@
 import {fetchCreate, fetchDel, fetchList, fetchUpdate} from '@/api/repository'
 import {dateFormat} from '@/utils'
 import {repoStatusList, repoTypeList, compressionList} from "@/consts"
-import {fetchLs} from "@/api/system";
-
-// const os = require('os');
-
-// const username = os.userInfo().username;
-// const userHome = os.platform() === 'darwin' ? `/Users/${username}` : `/home/${username}`;
-
-// console.log('userHome', userHome);
+import {fetchLs } from "@/api/system";
 
 export default {
   name: 'RepositoryList',
@@ -241,7 +234,7 @@ export default {
     return {
       dialogDirVisible: false,
       dirList: [],
-      dirCur: userHome,
+      dirCur: '/Users/hant',
       typeList: repoTypeList,
       statusList: repoStatusList,
       compressionList: compressionList,
@@ -280,7 +273,7 @@ export default {
         confirmPassword: '',
         compression: 0,
         packSize: 16,
-        path: '/'
+        path: '/Users/hant'
       },
       rules: {
         name: [{required: true, message: 'This field is required', trigger: 'blur'}],
@@ -313,7 +306,7 @@ export default {
         name: '',
         type: 4,
         endPoint: '',
-        path: '/',
+        path: '/Users/hant',
         region: '',
         bucket: '',
         keyId: '',
@@ -332,7 +325,7 @@ export default {
     onTypeChange(val) {
       this.endPointPlaceholder = ''
       if (val === 4) {
-        this.temp.path = '';
+        this.temp.path = '/';
       }
       switch (val) {
         case 1:
@@ -452,7 +445,7 @@ export default {
     },
     openDirSelect() {
       this.dialogDirVisible = true
-      this.dirCur = this.temp.path || userHome
+      this.dirCur = this.temp.path || '/Users/hant'
       this.dirList = []
       this.lsDir(this.dirCur)
     },
@@ -488,7 +481,7 @@ export default {
       })
       res.unshift({
         name: 'Root',
-        path: '/'
+        path: '/Users/hant'
       })
       return res
     },
