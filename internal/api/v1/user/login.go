@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hantbk/vbackup/internal/consts"
+	"github.com/hantbk/vbackup/internal/consts/global"
 	"github.com/hantbk/vbackup/internal/entity/v1/oplog"
 	"github.com/hantbk/vbackup/internal/entity/v1/sysuser"
 	"github.com/hantbk/vbackup/internal/model"
@@ -43,6 +44,7 @@ func loginHandler() iris.Handler {
 		if udb == nil {
 			return
 		}
+
 		udb.LastLogin = time.Now()
 		userinfo := &model.Userinfo{
 			Id:        udb.Id,
@@ -53,6 +55,7 @@ func loginHandler() iris.Handler {
 			Mfa:       false,
 			LastLogin: udb.LastLogin.Format(consts.Custom),
 		}
+
 		if udb.OtpSecret != "" {
 			userinfo.Mfa = true
 		}
@@ -116,10 +119,12 @@ func login(ctx *context.Context, username, password string) *sysuser.SysUser {
 		return nil
 	}
 
-	// fmt.Println("Username: ", u.Username)
-	// fmt.Println("NickName: ", u.NickName)
-	// fmt.Println("Email: ", u.Email)
-	// fmt.Println("Phone: ", u.Phone)
+	ctx.Values().Set("userEmail", u.Email)
+
+	// Send the email to the EmailChannel
+	go func() {
+		global.EmailChannel <- u.Email
+	}()
 
 	return u
 }

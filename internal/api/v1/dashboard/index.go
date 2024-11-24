@@ -39,7 +39,7 @@ func indexHandler() iris.Handler {
 			Total:        plant,
 			RunningCount: planc,
 		}
-		repositories, err := resticProxy.GetAllRepoWithStatus(0, "")
+		repositories, err := resticProxy.GetAllRepoWithStatus( 0, "")
 		if err != nil {
 			repot = 0
 			repoc = 0

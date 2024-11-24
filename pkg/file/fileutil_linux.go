@@ -87,6 +87,12 @@ func ListDir(path string) ([]*model.FileInfo, error) {
 	var files []*model.FileInfo
 	osType := runtime.GOOS
 	for _, dir := range dirs {
+
+		// Ignore hidden files
+		if strings.HasPrefix(dir.Name(), ".") {
+			continue
+		}
+
 		var ct time.Time
 		var statT *syscall.Stat_t
 		if osType == "linux" {

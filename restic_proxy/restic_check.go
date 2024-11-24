@@ -152,6 +152,7 @@ func prepareCheckCache(opts CheckOptions, gopts GlobalOptions, spr *wsTaskInfo.S
 }
 
 func RunCheckSync(ctx context.Context, opts CheckOptions, gopts GlobalOptions, repo *repository.Repository, spr *wsTaskInfo.Sprintf) error {
+
 	err := checkFlags(opts)
 	if err != nil {
 		return err
@@ -500,6 +501,7 @@ func CheckRepoStatus(repoid int) *restic.Config {
 
 // GetAllRepoWithStatus
 func GetAllRepoWithStatus(repotype int, name string) ([]repoModel.Repository, error) {
+	// fmt.Println(global.GlobalUser.Email)
 	reps, err := repositoryService.List(repotype, name, common.DBOptions{})
 	if err != nil && err.Error() != "not found" {
 		return nil, err
@@ -526,6 +528,7 @@ func GetAllRepoWithStatus(repotype int, name string) ([]repoModel.Repository, er
 				} else {
 					v.Status = repoModel.StatusErr
 					v.Errmsg = "Repository connection timeout"
+
 				}
 				v.Password = "******"
 				v.Secret = ""

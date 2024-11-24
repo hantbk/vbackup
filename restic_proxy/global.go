@@ -3,7 +3,9 @@ package resticProxy
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/url"
+	"os"
 	"path/filepath"
 	"sync"
 	"time"
@@ -33,6 +35,8 @@ import (
 	"github.com/hantbk/vbackup/pkg/restic_source/rinternal/options"
 	"github.com/hantbk/vbackup/pkg/restic_source/rinternal/repository"
 	"github.com/hantbk/vbackup/pkg/restic_source/rinternal/restic"
+	"github.com/joho/godotenv"
+	"gopkg.in/gomail.v2"
 )
 
 // TimeFormat is the format used for all timestamps printed by restic.
@@ -240,6 +244,7 @@ func InitRepository() {
 	}
 	go GetAllRepoStats()
 	fmt.Println("Repository loaded successfully! ")
+
 }
 
 // GetRepository: Retrieve repository operation object
@@ -267,6 +272,63 @@ func ReadRepo(opts GlobalOptions) (string, error) {
 	return repo, nil
 }
 
+var (
+	mailLock        sync.Mutex
+	checkRepoStatus bool = false
+)
+
+func SendEmail(ctx context.Context, to, subject, body string) error {
+
+	// dir, err2 := os.Getwd()
+	// if err2 != nil {
+	// 	log.Fatal("Error getting current directory:", err2)
+	// }
+	// fmt.Println("Current directory:", dir)
+
+	// Load environment variables from .env file
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		return err
+	}
+
+	// Get the SMTP credentials and other settings from environment variables
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
+	smtpHost := "smtp-relay.brevo.com"
+	smtpPort := 587
+
+	adminEmailAddress := os.Getenv("ADMIN_EMAIL_ADDRESS")
+	if smtpUser == "" || smtpPassword == "" || adminEmailAddress == "" {
+		log.Fatal("SMTP credentials or email addresses are not set properly.")
+		return fmt.Errorf("SMTP credentials or email addresses are not set")
+	}
+
+	// Create a new email message
+	mailer := gomail.NewMessage()
+
+	// Set the sender and recipient
+	mailer.SetHeader("From", adminEmailAddress)
+	mailer.SetHeader("To", to)
+	mailer.SetHeader("Subject", subject)
+
+	// Set the email body (HTML content)
+	mailer.SetBody("text/html", body)
+
+	// Set up the SMTP client with the provided credentials
+	dialer := gomail.NewDialer(smtpHost, smtpPort, smtpUser, smtpPassword)
+
+	// Send the email
+	err1 := dialer.DialAndSend(mailer)
+	if err1 != nil {
+		log.Printf("Failed to send email: %v", err1)
+		return err1
+	}
+
+	log.Printf("Email sent successfully to %s", to)
+	return nil
+}
+
 const maxKeys = 20
 
 // OpenRepository reads the password and opens the repository.
@@ -281,13 +343,87 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 		return nil, err
 	}
 
+	curRetry := 0
+	maxRetries := 5
+
+	// Report function inside OpenRepository
 	report := func(msg string, err error, d time.Duration) {
+		curRetry++
 		fmt.Printf("%v returned error, retrying after %v: %v\n", msg, d, err)
+
+		if curRetry >= maxRetries {
+			curRetry = 0
+			repoPath := "Unknown"
+
+			// Ensure backend is not nil
+			if be != nil {
+				repoPath = be.Location()
+			} else {
+				log.Printf("Error: Backend is nil, cannot determine repository path")
+			}
+
+			fmt.Printf("Repo at path %s is in error state\n", repoPath)
+
+			// Sử dụng goroutine để gửi email bất đồng bộ
+			go func() {
+				mailLock.Lock()
+				defer mailLock.Unlock()
+
+				// Get the current time
+				currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+				// Create HTML content for the email
+				emailBody := fmt.Sprintf(`
+				<html>
+					<body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px; text-align: center;">
+						<!-- Container for the email content -->
+						<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+							<!-- Logo -->
+							<img src="https://github.com/hantbk/vbackup/blob/main/web/dashboard/src/assets/logo/vbackup-bar.png?raw=true" alt="vBackup Logo" style="max-width: 200px; margin-bottom: 20px;" />
+
+							<!-- Header -->
+							<h2 style="color: #0056b3; font-size: 24px; margin-bottom: 20px;">Repository Error Notification</h2>
+
+							<!-- Error Information -->
+							<p style="font-size: 16px; margin-bottom: 10px;">
+								<strong>Error detected:</strong> A repository issue occurred at path:
+								<code style="background-color: #f0f0f0; padding: 5px; border-radius: 4px; font-size: 16px; color: #d9534f;">%s</code>
+							</p>
+							<p style="font-size: 16px; margin-bottom: 10px;">
+								<strong>Time of error:</strong> <span style="font-weight: bold;">%s</span>
+							</p>
+
+							<!-- Additional Information -->
+							<p style="font-size: 16px; margin-bottom: 20px;">
+								Please check the repository status and resolve the issue promptly to prevent further disruptions.
+							</p>
+
+							<!-- Footer -->
+							<hr style="border: 1px solid #ddd; margin: 20px 0;" />
+							<p style="font-style: italic; color: gray; font-size: 14px;">
+								This is an automated message. Do not reply to this email.
+							</p>
+						</div>
+					</body>
+				</html>`, repoPath, currentTime)
+
+				// Send the email
+				if err := SendEmail(ctx, "hantbka@gmail.com",
+					"[vBackup] Repository Error Notification",
+					emailBody); err != nil {
+					log.Printf("Failed to send error email: %v", err)
+				}
+			}()
+
+		}
 	}
+
 	success := func(msg string, retries int) {
 		fmt.Printf("%v operation successful after %d retries\n", msg, retries)
+		checkRepoStatus = true
 	}
-	be = retry.New(be, 10, report, success)
+
+	be = retry.New(be, maxRetries, report, success)
 
 	// wrap backend if a test specified a hook
 	if opts.backendTestHook != nil {
@@ -316,6 +452,7 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 	if len(id) > 8 {
 		id = id[:8]
 	}
+
 	fmt.Printf("repository %s opened successfully, password is correct\n", id)
 
 	if opts.NoCache {
