@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - "*"  # Run only for tags
-  pull_request:
 
 permissions:
   contents: write
