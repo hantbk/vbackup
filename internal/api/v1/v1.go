@@ -80,6 +80,7 @@ func logHandler() iris.Handler {
 				"data":         ctx.Values().Get("data"),
 				"isDocker":     server.IsDocker(),
 			}
+
 			ctx.StatusCode(iris.StatusUnauthorized)
 			_ = ctx.JSON(resp, iris.JSON{})
 			return

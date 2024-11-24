@@ -157,6 +157,7 @@ func getHandler() iris.Handler {
 			utils.Errore(ctx, err)
 			return
 		}
+
 		config := resticProxy.CheckRepoStatus(resp.Id)
 		if config != nil {
 			resp.Status = repository.StatusRun
@@ -164,11 +165,21 @@ func getHandler() iris.Handler {
 		} else {
 			resp.Status = repository.StatusErr
 			resp.Errmsg = "Repository connection timeout"
+
 		}
 		resp.Password = "******"
 		ctx.Values().Set("data", resp)
 	}
 }
+
+// func errHandler() iris.Handler {
+// 	return func(ctx *context.Context) {
+// 		err := ctx.GetErr()
+// 		if err != nil {
+// 			utils.Errore(ctx, err)
+// 		}
+// 	}
+// }
 
 func Install(parent iris.Party) {
 	// Repository related endpoints
@@ -183,4 +194,6 @@ func Install(parent iris.Party) {
 	sp.Put("/:id", updateHandler())
 	// Get repository by ID
 	sp.Get("/:id", getHandler())
+	// Error handler
+	// sp.Use(errHandler())
 }
