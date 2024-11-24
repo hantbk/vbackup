@@ -365,7 +365,6 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 			fmt.Printf("Repo at path %s is in error state\n", repoPath)
 
 			// Sử dụng goroutine để gửi email bất đồng bộ
-			// Goroutine to send the email asynchronously
 			go func() {
 				mailLock.Lock()
 				defer mailLock.Unlock()
@@ -375,27 +374,38 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 
 				// Create HTML content for the email
 				emailBody := fmt.Sprintf(`
-					<html>
-						<body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+				<html>
+					<body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px; text-align: center;">
+						<!-- Container for the email content -->
+						<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
 							<!-- Logo -->
 							<img src="https://github.com/hantbk/vbackup/blob/main/web/dashboard/src/assets/logo/vbackup-bar.png?raw=true" alt="vBackup Logo" style="max-width: 200px; margin-bottom: 20px;" />
-							
-							<h2 style="color: #0056b3;">Repository Error Notification</h2>
-							<p style="font-size: 16px;">
-								<strong>Error detected:</strong> A repository issue occurred at path: <code style="background-color: #f0f0f0; padding: 5px; border-radius: 4px;">%s</code>.
+
+							<!-- Header -->
+							<h2 style="color: #0056b3; font-size: 24px; margin-bottom: 20px;">Repository Error Notification</h2>
+
+							<!-- Error Information -->
+							<p style="font-size: 16px; margin-bottom: 10px;">
+								<strong>Error detected:</strong> A repository issue occurred at path:
+								<code style="background-color: #f0f0f0; padding: 5px; border-radius: 4px; font-size: 16px; color: #d9534f;">%s</code>
 							</p>
-							<p style="font-size: 16px;">
-								<strong>Time of error:</strong> %s
+							<p style="font-size: 16px; margin-bottom: 10px;">
+								<strong>Time of error:</strong> <span style="font-weight: bold;">%s</span>
 							</p>
-							<p style="font-size: 16px;">Please check the repository status and resolve the issue promptly.</p>
-							
+
+							<!-- Additional Information -->
+							<p style="font-size: 16px; margin-bottom: 20px;">
+								Please check the repository status and resolve the issue promptly to prevent further disruptions.
+							</p>
+
 							<!-- Footer -->
-							<hr style="border: 1px solid #ddd;" />
+							<hr style="border: 1px solid #ddd; margin: 20px 0;" />
 							<p style="font-style: italic; color: gray; font-size: 14px;">
 								This is an automated message. Do not reply to this email.
 							</p>
-						</body>
-					</html>`, repoPath, currentTime)
+						</div>
+					</body>
+				</html>`, repoPath, currentTime)
 
 				// Send the email
 				if err := SendEmail(ctx, "hantbka@gmail.com",
@@ -403,8 +413,8 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 					emailBody); err != nil {
 					log.Printf("Failed to send error email: %v", err)
 				}
-
 			}()
+
 		}
 	}
 
