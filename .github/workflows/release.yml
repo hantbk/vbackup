@@ -3,7 +3,7 @@ name: goreleaser
 on:
   push:
     tags:
-      - "*"  # Run only for tags
+      - "*" 
 
 permissions:
   contents: write
@@ -73,11 +73,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/vbackup 
+          images: ${{ secrets.DOCKER_USERNAME }}/vbackup
           tags: |
             type=ref,event=tag
             type=ref,event=branch
             type=semver,pattern={{version}}
+        env:
+          version: ${{ github.ref_name }} 
 
       - name: Build and Push Docker API Image
         uses: docker/build-push-action@v4
@@ -86,6 +88,6 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }} 
+          tags: ${{ steps.meta.outputs.tags }}  
           cache-from: type=gha
           cache-to: type=gha,mode=max

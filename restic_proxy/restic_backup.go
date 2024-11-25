@@ -53,7 +53,7 @@ type BackupOptions struct {
 
 func RunBackup(opts BackupOptions, repoid int, taskinfo task.TaskInfo) error {
 
-	fmt.Println("RunBackup called")
+	// fmt.Println("RunBackup called")
 
 	if opts.Host == "" {
 		hostname, err := os.Hostname()
