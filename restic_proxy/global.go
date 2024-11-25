@@ -7,9 +7,11 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 
+	"github.com/hantbk/vbackup/internal/consts/globalcontext"
 	"github.com/hantbk/vbackup/internal/consts/system_status"
 	repoModel "github.com/hantbk/vbackup/internal/entity/v1/repository"
 	"github.com/hantbk/vbackup/internal/server"
@@ -36,7 +38,6 @@ import (
 	"github.com/hantbk/vbackup/pkg/restic_source/rinternal/repository"
 	"github.com/hantbk/vbackup/pkg/restic_source/rinternal/restic"
 	"github.com/joho/godotenv"
-	"gopkg.in/gomail.v2"
 )
 
 // TimeFormat is the format used for all timestamps printed by restic.
@@ -277,62 +278,13 @@ var (
 	checkRepoStatus bool = false
 )
 
-func SendEmail(ctx context.Context, to, subject, body string) error {
-
-	// dir, err2 := os.Getwd()
-	// if err2 != nil {
-	// 	log.Fatal("Error getting current directory:", err2)
-	// }
-	// fmt.Println("Current directory:", dir)
-
-	// Load environment variables from .env file
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-		return err
-	}
-
-	// Get the SMTP credentials and other settings from environment variables
-	smtpUser := os.Getenv("SMTP_USER")
-	smtpPassword := os.Getenv("SMTP_PASSWORD")
-	smtpHost := "smtp-relay.brevo.com"
-	smtpPort := 587
-
-	adminEmailAddress := os.Getenv("ADMIN_EMAIL_ADDRESS")
-	if smtpUser == "" || smtpPassword == "" || adminEmailAddress == "" {
-		log.Fatal("SMTP credentials or email addresses are not set properly.")
-		return fmt.Errorf("SMTP credentials or email addresses are not set")
-	}
-
-	// Create a new email message
-	mailer := gomail.NewMessage()
-
-	// Set the sender and recipient
-	mailer.SetHeader("From", adminEmailAddress)
-	mailer.SetHeader("To", to)
-	mailer.SetHeader("Subject", subject)
-
-	// Set the email body (HTML content)
-	mailer.SetBody("text/html", body)
-
-	// Set up the SMTP client with the provided credentials
-	dialer := gomail.NewDialer(smtpHost, smtpPort, smtpUser, smtpPassword)
-
-	// Send the email
-	err1 := dialer.DialAndSend(mailer)
-	if err1 != nil {
-		log.Printf("Failed to send email: %v", err1)
-		return err1
-	}
-
-	log.Printf("Email sent successfully to %s", to)
-	return nil
-}
-
 const maxKeys = 20
 
 // OpenRepository reads the password and opens the repository.
 func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Repository, error) {
+
+	currentUser, _ := globalcontext.GetCurrentUser()
+
 	repo, err := ReadRepo(opts)
 	if err != nil {
 		return nil, err
@@ -343,8 +295,27 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 		return nil, err
 	}
 
+	// Load environment variables from .env file
+	err1 := godotenv.Load("../.env")
+	if err1 != nil {
+		log.Fatal("Error loading .env file")
+		return nil, err1
+	}
+
 	curRetry := 0
-	maxRetries := 5
+	// Retrieve the environment variable
+	maxRetriesStr := os.Getenv("MAX_RETRIES")
+
+	// Default value if the environment variable is not set
+	if maxRetriesStr == "" {
+		return nil, fmt.Errorf("MAX_RETRIES not set")
+	}
+
+	// Convert the string to an integer
+	maxRetries, err := strconv.Atoi(maxRetriesStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid MAX_RETRIES value: %s, error: %v", maxRetriesStr, err)
+	}
 
 	// Report function inside OpenRepository
 	report := func(msg string, err error, d time.Duration) {
@@ -408,7 +379,7 @@ func OpenRepository(ctx context.Context, opts GlobalOptions) (*repository.Reposi
 				</html>`, repoPath, currentTime)
 
 				// Send the email
-				if err := SendEmail(ctx, "hantbka@gmail.com",
+				if err := SendEmail(ctx, currentUser.Email,
 					"[vBackup] Repository Error Notification",
 					emailBody); err != nil {
 					log.Printf("Failed to send error email: %v", err)

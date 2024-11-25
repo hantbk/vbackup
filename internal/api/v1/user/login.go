@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hantbk/vbackup/internal/consts"
-	"github.com/hantbk/vbackup/internal/consts/global"
+	"github.com/hantbk/vbackup/internal/consts/globalcontext"
 	"github.com/hantbk/vbackup/internal/entity/v1/oplog"
 	"github.com/hantbk/vbackup/internal/entity/v1/sysuser"
 	"github.com/hantbk/vbackup/internal/model"
@@ -33,6 +33,7 @@ func init() {
 }
 
 func loginHandler() iris.Handler {
+
 	return func(ctx *context.Context) {
 		var loginData model.LoginData
 		err := ctx.ReadJSON(&loginData)
@@ -82,6 +83,10 @@ func loginHandler() iris.Handler {
 		}
 		userinfo.Token = token
 		ctx.Values().Set("data", userinfo)
+
+		// Store userinfo globally
+		globalcontext.SetCurrentUser(userinfo)
+
 		go func() {
 			// Update last login log
 			_ = userService.Update(udb, common.DBOptions{})
@@ -120,11 +125,6 @@ func login(ctx *context.Context, username, password string) *sysuser.SysUser {
 	}
 
 	ctx.Values().Set("userEmail", u.Email)
-
-	// Send the email to the EmailChannel
-	go func() {
-		global.EmailChannel <- u.Email
-	}()
 
 	return u
 }
