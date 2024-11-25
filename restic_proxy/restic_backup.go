@@ -3,10 +3,12 @@ package resticProxy
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"time"
 
+	"github.com/hantbk/vbackup/internal/consts/globalcontext"
 	"github.com/hantbk/vbackup/internal/server"
 	"github.com/hantbk/vbackup/internal/service/v1/common"
 	ser "github.com/hantbk/vbackup/internal/service/v1/task"
@@ -50,6 +52,9 @@ type BackupOptions struct {
 }
 
 func RunBackup(opts BackupOptions, repoid int, taskinfo task.TaskInfo) error {
+
+	fmt.Println("RunBackup called")
+
 	if opts.Host == "" {
 		hostname, err := os.Hostname()
 		if err != nil {
@@ -81,6 +86,7 @@ func RunBackup(opts BackupOptions, repoid int, taskinfo task.TaskInfo) error {
 	if opts.DryRun {
 		repo.SetDryRun()
 	}
+
 	lock, err := lockRepo(ctx, repo)
 	if err != nil {
 		clean.Cleanup()
@@ -89,6 +95,7 @@ func RunBackup(opts BackupOptions, repoid int, taskinfo task.TaskInfo) error {
 	clean.AddCleanCtx(func() {
 		unlockRepo(lock)
 	})
+
 	rejectByNameFuncs, err := collectRejectByNameFuncs(opts, repo)
 	if err != nil {
 		clean.Cleanup()
@@ -208,28 +215,91 @@ func RunBackup(opts BackupOptions, repoid int, taskinfo task.TaskInfo) error {
 	clean.AddCleanCtx(func() {
 		BackupUnLock(repoid, taskinfo.Path)
 	})
+
 	go func() {
 		defer clean.Cleanup()
+
+		var errorMessages []string
+
 		err = taskHistoryService.UpdateField(taskinfo.GetId(), "Status", task.StatusRunning, common.DBOptions{})
 		if err != nil {
 			server.Logger().Error(err)
+			errorMessages = append(errorMessages, fmt.Sprintf("Failed to update task status to running: %v", err))
 		}
+
 		_, id, err := arch.Snapshot(ctx, targets, snapshotOpts)
 		if err != nil {
 			progressPrinter.E(fmt.Errorf("unable to save snapshot: %v", err).Error())
+			errorMessages = append(errorMessages, fmt.Sprintf("Unable to save snapshot: %v", err))
 		}
+
 		t.Kill(nil)
 		werr := t.Wait()
 		if werr != nil {
 			server.Logger().Error(werr)
+			errorMessages = append(errorMessages, fmt.Sprintf("Error waiting for task to complete: %v", werr))
 		}
+
 		if !success {
 			progressPrinter.E(ErrInvalidSourceData.Error())
+			errorMessages = append(errorMessages, fmt.Sprintf("Invalid source data: %v", ErrInvalidSourceData.Error()))
 		}
+
+		// Nếu có lỗi, gửi email tổng hợp
+		if len(errorMessages) > 0 {
+			sendCombinedErrorEmail(errorMessages, taskinfo)
+		}
+
 		progressReporter.Finish(id, opts.DryRun)
 	}()
-	return nil
 
+	return nil
+}
+
+func sendCombinedErrorEmail(errorMessages []string, taskinfo task.TaskInfo) {
+
+	// Get the current user
+	currentUser, _ := globalcontext.GetCurrentUser()
+
+	// Get the current time
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+	// Tạo nội dung email từ danh sách lỗi
+	errorDetails := ""
+	for i, msg := range errorMessages {
+		errorDetails += fmt.Sprintf("<p><strong>Error %d:</strong> %s</p>", i+1, msg)
+	}
+
+	emailBody := fmt.Sprintf(`
+	<html>
+		<body style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+		<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+			<img src="https://github.com/hantbk/vbackup/blob/main/web/dashboard/src/assets/logo/vbackup-bar.png?raw=true" 
+			     alt="vBackup Logo" 
+			     style="max-width: 200px; margin: 0 auto 20px auto; display: block;" />
+			<h2 style="color: #d9534f; font-size: 24px; margin-bottom: 20px;">Task Error Notification</h2>
+			<p style="font-size: 16px; margin-bottom: 10px;">
+				<strong>Task ID:</strong> %d
+			</p>
+			<p style="font-size: 16px; margin-bottom: 10px;">
+				<strong>Task Name:</strong> %s
+			</p>
+			<p style="font-size: 16px; margin-bottom: 10px;">
+				<strong>Time:</strong> %s
+			</p>
+			<h3 style="color: #d9534f;">Error Details:</h3>
+			%s
+			<p style="font-style: italic; color: gray; font-size: 14px;">
+				This is an automated message. Please do not reply.
+			</p>
+		</div>
+	</body>
+	</html>`, taskinfo.GetId(), taskinfo.Name, currentTime, errorDetails)
+
+	// Gửi email
+	if err := SendEmail(context.Background(), currentUser.Email, "[vBackup] Task Error Notification", emailBody); err != nil {
+		log.Printf("Failed to send error email: %v", err)
+	}
 }
 
 func findParentSnapshot(ctx context.Context, repo restic.Repository, opts BackupOptions, targets []string, timeStampLimit time.Time) (*restic.Snapshot, error) {

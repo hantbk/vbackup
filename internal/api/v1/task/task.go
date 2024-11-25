@@ -1,8 +1,11 @@
 package task
 
 import (
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/hantbk/vbackup/internal/consts"
 	thmodel "github.com/hantbk/vbackup/internal/entity/v1/task"
 	"github.com/hantbk/vbackup/internal/model"
@@ -14,11 +17,8 @@ import (
 	"github.com/hantbk/vbackup/pkg/restic_source/rinternal/restic"
 	"github.com/hantbk/vbackup/pkg/utils"
 	resticProxy "github.com/hantbk/vbackup/restic_proxy"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
 )
 
 var taskService ser.Service
@@ -44,6 +44,60 @@ func backupHandler() iris.Handler {
 		}
 		ctx.Values().Set("data", taskid)
 	}
+}
+
+// Backup - Backup data, planid is the plan ID
+func Backup(planid int) (int, error) {
+	pl, err := planService.Get(planid, common.DBOptions{})
+	if err != nil {
+		return 0, err
+	}
+	repoid := pl.RepositoryId
+	progress := &model.StatusUpdate{
+		MessageType:      "status",
+		SecondsElapsed:   "0",
+		SecondsRemaining: "0",
+		TotalFiles:       0,
+		FilesDone:        0,
+		TotalBytes:       "0",
+		BytesDone:        "0",
+		ErrorCount:       0,
+	}
+	ta := &thmodel.Task{
+		Path:            pl.Path,
+		Name:            "backup_" + strconv.Itoa(planid) + "_" + strconv.Itoa(repoid) + "_" + time.Now().Format(consts.TaskHistoryName),
+		Status:          task.StatusNew,
+		RepositoryId:    repoid,
+		Progress:        progress,
+		PlanId:          pl.Id,
+		ReadConcurrency: pl.ReadConcurrency,
+	}
+	err = taskService.Create(ta, common.DBOptions{})
+	if err != nil {
+		return 0, err
+	}
+	opt := resticProxy.BackupOptions{UseFsSnapshot: true, ReadConcurrency: pl.ReadConcurrency}
+	taskInfo := task.TaskInfo{
+		Name: ta.Name,
+		Path: ta.Path,
+	}
+	taskInfo.SetId(ta.Id)
+
+	err = resticProxy.RunBackup(opt, repoid, taskInfo)
+
+	if err != nil {
+
+		ta.ArchivalError = append(ta.ArchivalError, model.ErrorUpdate{
+			MessageType: "error",
+			Error:       err.Error(),
+		})
+		ta.Status = task.StatusError
+
+		_ = taskService.Update(ta, common.DBOptions{})
+		return 0, err
+	}
+
+	return taskInfo.GetId(), nil
 }
 
 func restoreHandler() iris.Handler {
@@ -194,55 +248,6 @@ func ClearTaskRunning() {
 	for _, v := range errTasks {
 		_ = taskService.Update(&v, opt)
 	}
-}
-
-// Backup - Backup data, planid is the plan ID
-func Backup(planid int) (int, error) {
-	pl, err := planService.Get(planid, common.DBOptions{})
-	if err != nil {
-		return 0, err
-	}
-	repoid := pl.RepositoryId
-	progress := &model.StatusUpdate{
-		MessageType:      "status",
-		SecondsElapsed:   "0",
-		SecondsRemaining: "0",
-		TotalFiles:       0,
-		FilesDone:        0,
-		TotalBytes:       "0",
-		BytesDone:        "0",
-		ErrorCount:       0,
-	}
-	ta := &thmodel.Task{
-		Path:            pl.Path,
-		Name:            "backup_" + strconv.Itoa(planid) + "_" + strconv.Itoa(repoid) + "_" + time.Now().Format(consts.TaskHistoryName),
-		Status:          task.StatusNew,
-		RepositoryId:    repoid,
-		Progress:        progress,
-		PlanId:          pl.Id,
-		ReadConcurrency: pl.ReadConcurrency,
-	}
-	err = taskService.Create(ta, common.DBOptions{})
-	if err != nil {
-		return 0, err
-	}
-	opt := resticProxy.BackupOptions{UseFsSnapshot: true, ReadConcurrency: pl.ReadConcurrency}
-	taskInfo := task.TaskInfo{
-		Name: ta.Name,
-		Path: ta.Path,
-	}
-	taskInfo.SetId(ta.Id)
-	err = resticProxy.RunBackup(opt, repoid, taskInfo)
-	if err != nil {
-		ta.ArchivalError = append(ta.ArchivalError, model.ErrorUpdate{
-			MessageType: "error",
-			Error:       err.Error(),
-		})
-		ta.Status = task.StatusError
-		_ = taskService.Update(ta, common.DBOptions{})
-		return 0, err
-	}
-	return taskInfo.GetId(), nil
 }
 
 func Install(parent iris.Party) {

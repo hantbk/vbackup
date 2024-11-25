@@ -95,7 +95,7 @@
         <el-col v-if="taskInfo.scanner && taskInfo.status!==3" :span="8">
           <el-card class="card-h">
             <div slot="header" class="clearfix">
-              <span class="info_title bluetext">扫描信息</span>
+              <span class="info_title bluetext">Scan Information</span>
             </div>
             <el-row :gutter="10">
               <el-col :span="24"><p>Data volume: {{ taskInfo.scanner.dataSize }}</p></el-col>
@@ -412,7 +412,7 @@ export default {
             that.sockjsOpen = false
             that.$notify({
               type: 'error',
-              title: 'Error',
+              title: 'Error to open websocket',
               message: data.message
             })
           } else {

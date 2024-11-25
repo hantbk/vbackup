@@ -1,11 +1,10 @@
-package mail
+package resticProxy
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
-
-	"context"
 
 	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
@@ -14,10 +13,10 @@ import (
 func SendEmail(ctx context.Context, to, subject, body string) error {
 
 	// Load environment variables from .env file
-	err := godotenv.Load(".env")
-	if err != nil {
+	err1 := godotenv.Load("../.env")
+	if err1 != nil {
 		log.Fatal("Error loading .env file")
-		return err
+		return err1
 	}
 
 	// Get the SMTP credentials and other settings from environment variables
@@ -47,10 +46,10 @@ func SendEmail(ctx context.Context, to, subject, body string) error {
 	dialer := gomail.NewDialer(smtpHost, smtpPort, smtpUser, smtpPassword)
 
 	// Send the email
-	err = dialer.DialAndSend(mailer)
-	if err != nil {
-		log.Printf("Failed to send email: %v", err)
-		return err
+	err2 := dialer.DialAndSend(mailer)
+	if err2 != nil {
+		log.Printf("Failed to send email: %v", err2)
+		return err2
 	}
 
 	log.Printf("Email sent successfully to %s", to)
