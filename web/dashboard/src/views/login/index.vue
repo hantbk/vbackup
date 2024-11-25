@@ -222,17 +222,19 @@ $light_gray: $menuHover;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-
   }
 
   .logo-container {
-    padding: 30px 0 0 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
 
-    .logo {
-      height: 50px;
-      vertical-align: middle;
-    }
+  .logo {
+    height: 150px;
+    vertical-align: middle;
   }
+}
 
   .el-input {
     display: inline-block;

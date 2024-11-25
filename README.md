@@ -9,30 +9,6 @@
 [![CI Status](https://github.com/hantbk/vbackup/actions/workflows/ci.yml/badge.svg)](https://github.com/hantbk/vbackup/actions/workflows/ci.yml)
 [![Release Status](https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg)](https://github.com/hantbk/vbackup/actions/workflows/release.yml)
 
-<!-- <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
-    <a href="https://goreportcard.com/report/github.com/hantbk/vbackup">
-        <img src="https://goreportcard.com/badge/github.com/hantbk/vbackup" alt="Go Report Card" />
-    </a>
-    <a href="https://godoc.org/github.com/hantbk/vbackup">
-        <img src="https://godoc.org/github.com/hantbk/vbackup?status.svg" alt="GoDoc" />
-    </a>
-    <a href="https://opensource.org/licenses/Apache-2.0">
-        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0" />
-    </a>
-    <a href="https://github.com/hantbk/vbackup">
-        <img src="https://img.shields.io/github/go-mod/go-version/hantbk/vbackup.svg" alt="Go version" />
-    </a>
-    <a href="https://github.com/hantbk/vbackup/releases/">
-        <img src="https://img.shields.io/github/release/hantbk/vbackup.svg" alt="GitHub release" />
-    </a>
-    <a href="https://github.com/hantbk/vbackup/actions/workflows/ci.yml">
-        <img src="https://github.com/hantbk/vbackup/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
-    </a>
-    <a href="https://github.com/hantbk/vbackup/actions/workflows/release.yml">
-        <img src="https://github.com/hantbk/vbackup/actions/workflows/release.yml/badge.svg" alt="Release Status" />
-    </a>
-</div> -->
-
 ## Overview
 
 [vBackup](https://github.com/hantbk/vbackup) is a file backup system built on [Restic](https://github.com/restic/restic). It not only has the powerful capabilities of Restic, but also adds rich functions and ease of use to provide users with a more comprehensive data protection experience.
@@ -86,6 +62,56 @@ services:
     user: "root"
     hostname: ${HOSTNAME}
 ```
+
+## Overview
+
+### Login Page
+
+![Login Page](./docs/img/login.png)
+
+### Dashboard Page
+
+![Dashboard](./docs/img/dashboard.png)
+
+### Repository Page
+
+#### Repository List
+
+![Repo](./docs/img/repo-list.png)
+
+#### Create Repository
+
+![Repo Create](./docs/img/repo-create.png)
+
+### Policy Page
+
+#### Policy List
+
+![Plan](./docs/img/plan-list.png)
+
+#### Create Policy
+
+![Plan Create](./docs/img/plan-create.png)
+
+### Record Page
+
+![Record](./docs/img/record.png)
+
+### User Management Page
+
+![User](./docs/img/user-manager.png)
+
+### Create User
+
+![User Create](./docs/img/create-user.png)
+
+### Setting Page
+
+![Setting](./docs/img/personal.png)
+
+### MFA Page
+
+![MFA](./docs/img/mfa.png)
 
 ## Quick Start
 
