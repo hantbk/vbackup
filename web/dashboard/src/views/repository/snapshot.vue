@@ -34,7 +34,7 @@
               <div>
                 <p>Cleanup Policy:</p>
                 <div v-if="policy.n > 0">
-                  <p>Retain latest <i class="blue">{{ policy.n + formatType(policy.type).name }} </i> snapshots</p>
+                  <p>Retain latest <i class="blue">{{ policy.n + " "+ formatType(policy.type).name }} </i> snapshots</p>
                   <el-button
                     class="forget-create"
                     type="text"
@@ -118,7 +118,7 @@
             </el-select>
           </template>
         </el-input>
-        <p class="red">The system will retain the latest {{ temp.n + formatType(temp.type).name }} snapshots, and any excess will be deleted to free up disk space.</p>
+        <p class="red">The system will retain the latest {{ temp.n + " " + formatType(temp.type).name }} snapshots, and any excess will be deleted to free up disk space.</p>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">

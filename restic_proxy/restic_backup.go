@@ -219,36 +219,36 @@ func RunBackup(opts BackupOptions, repoid int, taskinfo task.TaskInfo) error {
 	go func() {
 		defer clean.Cleanup()
 
-		var errorMessages []string
+		// var errorMessages []string
 
 		err = taskHistoryService.UpdateField(taskinfo.GetId(), "Status", task.StatusRunning, common.DBOptions{})
 		if err != nil {
 			server.Logger().Error(err)
-			errorMessages = append(errorMessages, fmt.Sprintf("Failed to update task status to running: %v", err))
+			// errorMessages = append(errorMessages, fmt.Sprintf("Failed to update task status to running: %v", err))
 		}
 
 		_, id, err := arch.Snapshot(ctx, targets, snapshotOpts)
 		if err != nil {
 			progressPrinter.E(fmt.Errorf("unable to save snapshot: %v", err).Error())
-			errorMessages = append(errorMessages, fmt.Sprintf("Unable to save snapshot: %v", err))
+			// errorMessages = append(errorMessages, fmt.Sprintf("Unable to save snapshot: %v", err))
 		}
 
 		t.Kill(nil)
 		werr := t.Wait()
 		if werr != nil {
 			server.Logger().Error(werr)
-			errorMessages = append(errorMessages, fmt.Sprintf("Error waiting for task to complete: %v", werr))
+			// errorMessages = append(errorMessages, fmt.Sprintf("Error waiting for task to complete: %v", werr))
 		}
 
 		if !success {
 			progressPrinter.E(ErrInvalidSourceData.Error())
-			errorMessages = append(errorMessages, fmt.Sprintf("Invalid source data: %v", ErrInvalidSourceData.Error()))
+			// errorMessages = append(errorMessages, fmt.Sprintf("Invalid source data: %v", ErrInvalidSourceData.Error()))
 		}
 
-		// Nếu có lỗi, gửi email tổng hợp
-		if len(errorMessages) > 0 {
-			sendCombinedErrorEmail(errorMessages, taskinfo)
-		}
+		// // Nếu có lỗi, gửi email tổng hợp
+		// if len(errorMessages) > 0 {
+		// 	sendCombinedErrorEmail(errorMessages, taskinfo)
+		// }
 
 		progressReporter.Finish(id, opts.DryRun)
 	}()
